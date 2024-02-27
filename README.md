@@ -9,7 +9,8 @@ Group Number: **253505**
 
 ### System Class Diagram
 
-[Image of system class diagram]
+![Untitled Diagram drawio](https://github.com/hacker-niki/docsManager/assets/62511860/fe5b2a38-ffc4-4147-9b47-fa53e36b02cb)
+
 
 ### Application Functions
 
