@@ -1,16 +1,19 @@
 # docs Manager
+**NIKITA SENKO 253505**
 
 ## Project Description
 
-This project is a document management system for a company. It allows users to create, edit, view, and delete documents. The system also includes a document generator that can be used to generate documents from templates.
+This project is a document management system for a company. 
+It allows users to create, edit, view, and delete documents. 
+The system also includes a document generator that can be used to generate documents from templates.
 
-**Nikita**
-Group Number: **253505**
+## Dependencies:
+- elzip
+
 
 ### System Class Diagram
 
 ![Untitled Diagram drawio(1)](https://github.com/hacker-niki/docsManager/assets/62511860/4a4321a8-073b-42a3-adc9-afd0e3cde964)
-
 
 
 ### Application Functions
