@@ -10,29 +10,16 @@
 #include "../Entities/Document.h"
 #include "../Entities/Template.h"
 
+template<typename T>
 class IRepository {
 public:
+    virtual void add(const T &) = 0;
 
-    virtual int save_all() = 0;
+    virtual T &get(int id) = 0;
 
-    virtual int update_all() = 0;
+    virtual void remove(int id) = 0;
 
-    virtual void add(Document document) = 0;
-
-    virtual void add(Template temp) = 0;
-
-    virtual Document get_doc(int id) = 0;
-
-    virtual Template get_temp(int id) = 0;
-
-    virtual void remove_doc(int id) = 0;
-
-    virtual void remove_temp(int id) = 0;
-
-    virtual std::vector<Document> get_all_docs() = 0;
-
-    virtual std::vector<Template> get_all_temp() = 0;
-
+    virtual std::vector<T> get_all() = 0;
 
 };
 

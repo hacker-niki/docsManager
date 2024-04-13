@@ -23,5 +23,3 @@ std::string Document::get_type() {
 std::string Document::get_path() {
     return filepath;
 }
-
-

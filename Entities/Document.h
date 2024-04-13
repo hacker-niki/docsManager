@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "IDocument.h"
+#include "../Interfaces/IDocument.h"
 #include "Field.h"
 
 class Document : public IDocument {
