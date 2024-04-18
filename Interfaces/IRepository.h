@@ -21,6 +21,8 @@ public:
 
     virtual std::vector<T> get_all() = 0;
 
+    virtual int get_size() = 0;
+
 };
 
 #endif //IREPOSITORY_H

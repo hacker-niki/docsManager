@@ -12,13 +12,12 @@
 
 class RepMaster {
 public:
-    std::shared_ptr<DocumentRepository> documentRepository;
-    std::shared_ptr<TemplateRepository> templateRepository;
+    std::shared_ptr<DocumentRepository> documentRepository_;
+    std::shared_ptr<TemplateRepository> templateRepository_;
 
     RepMaster() {
-        templateRepository = std::make_shared<TemplateRepository>();
-        documentRepository = std::make_shared<DocumentRepository>();
-
+        templateRepository_ = std::make_shared<TemplateRepository>();
+        documentRepository_ = std::make_shared<DocumentRepository>();
     }
 
     int save();

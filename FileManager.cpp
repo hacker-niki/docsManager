@@ -7,54 +7,68 @@
 #include "FileManager.h"
 
 bool FileManager::copyFile(const std::string &sourcePath, const std::string &destinationPath) {
-    {
+    while (true) {
         std::ifstream sourceFile(sourcePath, std::ios::binary);
-        if (!sourceFile) {
-//            std::cout << "Failed to open source file." << std::endl;
-            return false;
-        }
-
         std::ofstream destinationFile(destinationPath, std::ios::binary);
-        if (!destinationFile) {
-//            std::cout << "Failed to create destination file." << std::endl;
-            return false;
+
+        if (!destinationFile || !sourceFile) {
+            break;
         }
 
         destinationFile << sourceFile.rdbuf();
 
-        if (sourceFile.fail()) {
-//            std::cout << "Error occurred while reading from source file." << std::endl;
-            return false;
-        }
-
-        if (destinationFile.fail()) {
-//            std::cout << "Error occurred while writing to destination file." << std::endl;
-            return false;
+        if (sourceFile.fail() || destinationFile.fail()) {
+            break;
         }
 
         sourceFile.close();
         destinationFile.close();
 
         return true;
-
-
     }
+    return false;
 }
 
 std::string FileManager::getFileName(const std::string &filePath) {
-    std::filesystem::path path(filePath);
-    return path.filename().string();
+    try {
+        std::filesystem::path path(filePath);
+        return path.filename().string();
+    } catch (...) {
+        throw std::invalid_argument("Error while getting filename🙂");
+    }
 }
 
 std::string FileManager::read_docx(std::string filePath) {
-    std::string ans;
-    auto doc = duckx::Document(filePath);
-    doc.open();
-    for (auto p = doc.paragraphs(); p.has_next(); p.next()) {
-        for (auto r = p.runs(); r.has_next(); r.next()) {
-            ans += r.get_text();
+    int flag = 0;
+    while (true) {
+        std::string ans;
+
+        if (!fileExists(filePath)) {
+            flag = 1;
+            break;
         }
-        ans += '\n';
+        auto doc = duckx::Document(filePath);
+        try {
+            doc.open();
+
+            for (auto p = doc.paragraphs(); p.has_next(); p.next()) {
+                for (auto r = p.runs(); r.has_next(); r.next()) {
+                    ans += r.get_text();
+                }
+                ans += '\n';
+            }
+            return ans;
+        } catch (...) {
+            flag = 2;
+            break;
+        }
     }
-    return ans;
+    switch (flag) {
+        case 1:
+            throw std::invalid_argument("Error while reading document: file don't exists🙂");
+        case 2:
+            throw std::invalid_argument("Error while reading document: file unreadable🙂");
+        default:
+            throw std::invalid_argument("Error while reading document: unhandled exception🙂");
+    }
 }

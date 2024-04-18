@@ -22,6 +22,10 @@ public:
 
     void remove(int id) override;
 
+    int get_size() override {
+        return documents_.size();
+    }
+
     std::vector<Document> get_all() override;
 };
 

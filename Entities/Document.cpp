@@ -4,22 +4,30 @@
 
 #include <stdexcept>
 #include "Document.h"
+#include "../FileManager.h"
 
 Document::Document(const std::string &name, const std::string &filepath) {
-    this->name = name;
-    this->filepath = filepath;
-    this->type = "Document";
+
+    while (true) {
+        this->name_ = name;
+        if (!FileManager::fileExists(filepath))
+            break;
+        this->filepath_ = filepath;
+        this->type_ = "Document";
+        return;
+    }
+    throw std::invalid_argument("Document didn't created 🙂");
 }
 
 
 std::string Document::get_name() {
-    return name;
+    return name_;
 }
 
 std::string Document::get_type() {
-    return type;
+    return type_;
 }
 
 std::string Document::get_path() {
-    return filepath;
+    return filepath_;
 }

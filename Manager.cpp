@@ -9,41 +9,41 @@
 #include "FileManager.h"
 
 Manager::Manager() {
-    repMaster = std::make_shared<RepMaster>();
+    repMaster_ = std::make_shared<RepMaster>();
     generator_ = std::make_shared<Generator>();
+    folder_name_ = "data";
 }
 
 void Manager::create_template(std::string path, std::string name) {
     auto temp = Template(name, path);
     generator_->generate(temp);
-    repMaster->templateRepository->add(temp);
+    repMaster_->templateRepository_->add(temp);
 }
 
 void Manager::add_document(int template_id, std::string name) {
-    auto &templ = repMaster->templateRepository->get(template_id);
+    auto &templ = repMaster_->templateRepository_->get(template_id);
     generator_->generate(templ, name);
 }
 
 void Manager::add_document(std::string filepath, std::string name) {
-//    FileManager::copyFile(filepath, "/data/" + FileManager::getFileName(filepath));
-    auto doc = Document(name, "/data/" + FileManager::getFileName(filepath));
-    repMaster->documentRepository->add(doc);
+    auto doc = Document(name, "./" + folder_name_ + "/" + FileManager::getFileName(filepath));
+    repMaster_->documentRepository_->add(doc);
 }
 
 std::vector<Document> Manager::get_documents() {
-    return repMaster->documentRepository->get_all();
+    return repMaster_->documentRepository_->get_all();
 }
 
 std::vector<Template> Manager::get_templates() {
-    return repMaster->templateRepository->get_all();
+    return repMaster_->templateRepository_->get_all();
 }
 
 Template &Manager::getTempate(int id) {
-    return repMaster->templateRepository->get(id);
+    return repMaster_->templateRepository_->get(id);
 }
 
 Document &Manager::getDocument(int id) {
-    return repMaster->documentRepository->get(id);
+    return repMaster_->documentRepository_->get(id);
 }
 
 Manager::~Manager() = default;

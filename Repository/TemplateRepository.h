@@ -13,13 +13,17 @@ private:
     std::vector<Template> templates_;
 public:
 
-    TemplateRepository() {}
+    TemplateRepository() = default;
 
     void add(const Template &temp) override;
 
     Template &get(int id) override;
 
     void remove(int id) override;
+
+    int get_size() override {
+        return templates_.size();   
+    }
 
     std::vector<Template> get_all() override;
 

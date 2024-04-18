@@ -12,14 +12,13 @@
 #include "Repository/RepMaster.h"
 
 class Manager {
-    std::shared_ptr<RepMaster> repMaster;
+    std::shared_ptr<RepMaster> repMaster_;
     std::shared_ptr<IGenerator> generator_;
+    std::string folder_name_;
 public:
     Manager();
 
     ~Manager();
-
-    int generate_document(int template_id);
 
     std::vector<Document> get_documents();
 

@@ -9,23 +9,23 @@
 
 class Field {
 public:
-    Field(const std::string &field);
+    explicit Field(const std::string &field) : name_(field), content_(field) {}
 
     std::string get_name() {
-        return name;
+        return name_;
     }
 
     void set_content(const std::string &field_content) {
-        this->content = field_content;
+        this->content_ = field_content;
     }
 
     std::string get_content() {
-        return this->content;
+        return this->content_;
     }
 
 protected:
-    std::string name;
-    std::string content;
+    std::string name_;
+    std::string content_;
 };
 
 

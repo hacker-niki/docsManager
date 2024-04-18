@@ -18,11 +18,11 @@ The system also includes a document generator that can be used to generate docum
 
 ### Application Functions
 
-    Create Document: This function allows users to create new documents. Users can specify the document type, name, and content.
-    Edit Document: This function allows users to edit existing documents. Users can change the document type, name, and content.
-    View Document: This function allows users to view existing documents. Users can see the document type, name, and content.
+    Create Document: This function allows users to create new documents. Users can specify the document type_, name_, and content_.
+    Edit Document: This function allows users to edit existing documents. Users can change the document type_, name_, and content_.
+    View Document: This function allows users to view existing documents. Users can see the document type_, name_, and content_.
     Delete Document: This function allows users to delete existing documents.
-    Generate Document: This function allows users to generate documents from templates. Users can specify the template name and the data to be used to generate the document.
+    Generate Document: This function allows users to generate documents from templates. Users can specify the template name_ and the data to be used to generate the document.
 
 ### Data Models
 
@@ -38,4 +38,4 @@ The system also includes a document generator that can be used to generate docum
     - ID
     - Name
     - Content
-    - fields
+    - fields_

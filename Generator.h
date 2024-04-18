@@ -26,57 +26,76 @@ private:
         }
 
         char operator[](int cnt) {
-            int tmp = 0;
-            int num = 0;
-            while (tmp < cnt) {
-                tmp += vector_strings[num].size();
-                num++;
-                if (tmp >= cnt) {
-                    int k = vector_strings[num - 1].size() - 1;
-                    while (tmp != cnt) {
-                        k--;
-                        tmp--;
+            while (true) {
+                if (cnt > size || cnt < 0)
+                    break;
+                int tmp = 0;
+                int num = 0;
+                while (tmp < cnt) {
+                    tmp += vector_strings[num].size();
+                    num++;
+                    if (tmp >= cnt) {
+                        int k = vector_strings[num - 1].size() - 1;
+                        while (tmp != cnt) {
+                            k--;
+                            tmp--;
+                        }
+                        return vector_strings[num - 1][k];
                     }
-                    return vector_strings[num - 1][k];
                 }
+                return 0;
             }
-            return 0;
+            throw std::invalid_argument("Index is out of range🙂");
         }
 
         void operator()(int cnt) {
-            int tmp = 0;
-            int num = 0;
-            while (tmp < cnt) {
-                tmp += vector_strings[num].size();
-                num++;
-                if (tmp >= cnt) {
-                    int k = vector_strings[num - 1].size() - 1;
-                    while (tmp != cnt) {
-                        k--;
-                        tmp--;
+            while (true) {
+                if (cnt > size || cnt < 0)
+                    break;
+                int tmp = 0;
+                int num = 0;
+                while (tmp < cnt) {
+                    tmp += vector_strings[num].size();
+                    num++;
+                    if (tmp >= cnt) {
+                        int k = vector_strings[num - 1].size() - 1;
+                        while (tmp != cnt) {
+                            k--;
+                            tmp--;
+                        }
+                        vector_strings[num - 1].erase(k, 1);
+                        --size;
                     }
-                    vector_strings[num - 1].erase(k, 1);
-                    --size;
                 }
+                return;
             }
+            throw std::invalid_argument("Index is out of range🙂");
         }
 
         void operator()(int cnt, std::string str) {
-            int tmp = 0;
-            int num = 0;
-            while (tmp < cnt) {
-                tmp += vector_strings[num].size();
-                num++;
-                if (tmp >= cnt) {
-                    int k = vector_strings[num - 1].size() - 1;
-                    while (tmp != cnt) {
-                        k--;
-                        tmp--;
+            while (true) {
+                if (cnt > size || cnt < 0)
+                    break;
+
+                int tmp = 0;
+                int num = 0;
+                while (tmp < cnt) {
+                    tmp += vector_strings[num].size();
+                    num++;
+                    if (tmp >= cnt) {
+                        int k = vector_strings[num - 1].size() - 1;
+                        while (tmp != cnt) {
+                            k--;
+                            tmp--;
+                        }
+                        vector_strings[num - 1].insert(k, str);
+                        size += str.size();
                     }
-                    vector_strings[num - 1].insert(k, str);
-                    size += str.size();
                 }
+                return;
             }
+            throw std::invalid_argument("Index is out of range🙂");
+
         }
     };
 
@@ -84,7 +103,7 @@ private:
 
 public:
     ~Generator();
-    
+
     Generator() : field_symbol('%') {}
 
     explicit Generator(char field_symbol);
@@ -95,7 +114,6 @@ public:
 
     void generate(Document &aDocument) override;
 
-    
 };
 
 #endif //GENERATOR_H

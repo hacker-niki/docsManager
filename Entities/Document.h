@@ -12,10 +12,10 @@
 
 class Document : public IDocument {
 protected:
-    std::string name;
-    std::string type;
-    std::string filepath;
-    std::vector<Field> fields;
+    std::string name_;
+    std::string type_;
+    std::string filepath_;
+    std::vector<Field> fields_;
 
 
 public:
