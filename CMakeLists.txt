@@ -27,7 +27,10 @@ add_library(lib STATIC Entities/Document.cpp
         Repository/DocumentRepository.h
         Repository/RepMaster.cpp
         Repository/RepMaster.h
-        Interfaces/ISerializer.h)
+        Interfaces/ISerializer.h
+        sqlite/sqlite3.c
+        sqlite/shell.c
+)
 
 #target_compile_definitions(lib PUBLIC lib)
 

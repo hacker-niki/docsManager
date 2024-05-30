@@ -12,6 +12,8 @@
 
 class Field : public ISerializer<Field> {
 public:
+    Field() = default;
+
     explicit Field(const std::string &field) : name_(field), content_(field) {}
 
     std::string get_name() {
@@ -26,7 +28,7 @@ public:
         return this->content_;
     }
 
-    std::string to_string() override {
+    std::string to_string() const override {
         nlohmann::json j;
         j["name"] = name_;
         j["content"] = content_;

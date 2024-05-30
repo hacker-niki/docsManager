@@ -722,7 +722,7 @@ SQLITE_API int sqlite3_exec(
 ** An [sqlite3_file] object represents an open file in the
 ** [sqlite3_vfs | OS interface layer].  Individual OS interface
 ** implementations will
-** want to subclass this object by appending additional fields
+** want to subclass this object by appending additional fields_
 ** for their own use.  The pMethods entry is a pointer to an
 ** [sqlite3_io_methods] object that defines methods for performing
 ** I/O operations on the open file.
@@ -1306,7 +1306,7 @@ typedef const char *sqlite3_filename;
 ** is incremented.  The iVersion value started out as 1 in
 ** SQLite [version 3.5.0] on [dateof:3.5.0], then increased to 2
 ** with SQLite [version 3.7.0] on [dateof:3.7.0], and then increased
-** to 3 with SQLite [version 3.7.6] on [dateof:3.7.6].  Additional fields
+** to 3 with SQLite [version 3.7.6] on [dateof:3.7.6].  Additional fields_
 ** may be appended to the sqlite3_vfs object and the iVersion value
 ** may increase again in future versions of SQLite.
 ** Note that due to an oversight, the structure
@@ -1498,7 +1498,7 @@ struct sqlite3_vfs {
   const char *(*xNextSystemCall)(sqlite3_vfs*, const char *zName);
   /*
   ** The methods above are in versions 1 through 3 of the sqlite_vfs object.
-  ** New fields may be appended in future versions.  The iVersion
+  ** New fields_ may be appended in future versions.  The iVersion
   ** value will increment whenever this happens.
   */
 };
@@ -2122,7 +2122,7 @@ struct sqlite3_mem_methods {
 ** <dd>The SQLITE_CONFIG_SORTERREF_SIZE option accepts a single parameter
 ** of type (int) - the new value of the sorter-reference size threshold.
 ** Usually, when SQLite uses an external sort to order records according
-** to an ORDER BY clause, all fields required by the caller are present in the
+** to an ORDER BY clause, all fields_ required by the caller are present in the
 ** sorted records. However, if SQLite determines based on the declared type
 ** of a table column that its values are likely to be very large - larger
 ** than the configured sorter-reference size threshold - then a reference
@@ -7353,9 +7353,9 @@ struct sqlite3_module {
 ** The sqlite3_index_info structure and its substructures is used as part
 ** of the [virtual table] interface to
 ** pass information into and receive the reply from the [xBestIndex]
-** method of a [virtual table module].  The fields under **Inputs** are the
+** method of a [virtual table module].  The fields_ under **Inputs** are the
 ** inputs to xBestIndex and are read-only.  xBestIndex inserts its
-** results into the **Outputs** fields.
+** results into the **Outputs** fields_.
 **
 ** ^(The aConstraint[] array records WHERE clause constraints of the form:
 **
@@ -7616,7 +7616,7 @@ SQLITE_API int sqlite3_drop_modules(
 ** of this object to describe a particular instance
 ** of the [virtual table].  Each subclass will
 ** be tailored to the specific needs of the module implementation.
-** The purpose of this superclass is to define certain fields that are
+** The purpose of this superclass is to define certain fields_ that are
 ** common to all module implementations.
 **
 ** ^Virtual tables methods can set an error message by assigning a
@@ -7630,7 +7630,7 @@ struct sqlite3_vtab {
   const sqlite3_module *pModule;  /* The module for this virtual table */
   int nRef;                       /* Number of open cursors */
   char *zErrMsg;                  /* Error message from sqlite3_mprintf() */
-  /* Virtual table implementations will typically add additional fields */
+  /* Virtual table implementations will typically add additional fields_ */
 };
 
 /*
@@ -7647,12 +7647,12 @@ struct sqlite3_vtab {
 ** of the module.  Each module implementation will define
 ** the content of a cursor structure to suit its own needs.
 **
-** This superclass exists in order to define fields of the cursor that
+** This superclass exists in order to define fields_ of the cursor that
 ** are common to all implementations.
 */
 struct sqlite3_vtab_cursor {
   sqlite3_vtab *pVtab;      /* Virtual table of this cursor */
-  /* Virtual table implementations will typically add additional fields */
+  /* Virtual table implementations will typically add additional fields_ */
 };
 
 /*
@@ -9922,7 +9922,7 @@ SQLITE_API const char *sqlite3_vtab_collation(sqlite3_index_info*,int);
 ** <ol><li value="0"><p>
 ** ^If the sqlite3_vtab_distinct() interface returns 0, that means
 ** that the query planner needs the virtual table to return all rows in the
-** sort order defined by the "nOrderBy" and "aOrderBy" fields of the
+** sort order defined by the "nOrderBy" and "aOrderBy" fields_ of the
 ** [sqlite3_index_info] object.  This is the default expectation.  If the
 ** virtual table outputs all rows in sorted order, then it is always safe for
 ** the xBestIndex method to set the "orderByConsumed" flag, regardless of
@@ -10900,7 +10900,7 @@ SQLITE_API int sqlite3_rtree_query_callback(
 ** argument to scored geometry callback registered using
 ** sqlite3_rtree_query_callback().
 **
-** Note that the first 5 fields of this structure are identical to
+** Note that the first 5 fields_ of this structure are identical to
 ** sqlite3_rtree_geometry.  This structure is a subclass of
 ** sqlite3_rtree_geometry.
 */
@@ -10920,7 +10920,7 @@ struct sqlite3_rtree_query_info {
   int eParentWithin;                /* Visibility of parent node */
   int eWithin;                      /* OUT: Visibility */
   sqlite3_rtree_dbl rScore;         /* OUT: Write the score here */
-  /* The following fields are only available in 3.8.11 and later */
+  /* The following fields_ are only available in 3.8.11 and later */
   sqlite3_value **apSqlParam;       /* Original SQL values of parameters */
 };
 
@@ -11277,11 +11277,11 @@ SQLITE_API void sqlite3session_table_filter(
 **
 **   <li> For each record generated by an update or delete, the database is
 **        queried for a row with a matching primary key. If such a row is
-**        found and one or more of the non-primary key fields have been
+**        found and one or more of the non-primary key fields_ have been
 **        modified from their original values, an UPDATE change is added to
 **        the changeset. Or, if no such row is found in the table, a DELETE
 **        change is added to the changeset. If there is a row with a matching
-**        primary key in the database, but all fields contain their original
+**        primary key in the database, but all fields_ contain their original
 **        values, no change is added to the changeset.
 ** </ul>
 **
@@ -11301,7 +11301,7 @@ SQLITE_API void sqlite3session_table_filter(
 ** changeset, even though the delete took place while the session was disabled.
 ** Or, if one field of a row is updated while a session is disabled, and
 ** another field of the same row is updated while the session is enabled, the
-** resulting changeset will contain an UPDATE change that updates both fields.
+** resulting changeset will contain an UPDATE change that updates both fields_.
 */
 SQLITE_API int sqlite3session_changeset(
   sqlite3_session *pSession,      /* Session object */
@@ -11397,9 +11397,9 @@ SQLITE_API int sqlite3session_diff(
 ** The differences between a patchset and a changeset are that:
 **
 ** <ul>
-**   <li> DELETE records consist of the primary key fields only. The
-**        original values of other fields are omitted.
-**   <li> The original values of any modified fields are omitted from
+**   <li> DELETE records consist of the primary key fields_ only. The
+**        original values of other fields_ are omitted.
+**   <li> The original values of any modified fields_ are omitted from
 **        UPDATE records.
 ** </ul>
 **
@@ -11409,7 +11409,7 @@ SQLITE_API int sqlite3session_diff(
 ** attempting to use a patchset blob with old versions of the
 ** sqlite3changeset_xxx APIs also provokes an SQLITE_CORRUPT error.
 **
-** Because the non-primary key "old.*" fields are omitted, no
+** Because the non-primary key "old.*" fields_ are omitted, no
 ** SQLITE_CHANGESET_DATA conflicts can be detected or reported if a patchset
 ** is passed to the sqlite3changeset_apply() API. Other conflict types work
 ** in the same way as for changesets.
@@ -12101,11 +12101,11 @@ SQLITE_API void sqlite3changegroup_delete(sqlite3_changegroup*);
 **   the changeset the row is deleted from the target database.
 **
 **   If a row with matching primary key values is found, but one or more of
-**   the non-primary key fields contains a value different from the original
+**   the non-primary key fields_ contains a value different from the original
 **   row value stored in the changeset, the conflict-handler function is
 **   invoked with [SQLITE_CHANGESET_DATA] as the second argument. If the
 **   database table has more columns than are recorded in the changeset,
-**   only the values of those non-primary key fields are compared against
+**   only the values of those non-primary key fields_ are compared against
 **   the current database contents - any trailing database table columns
 **   are ignored.
 **
@@ -12122,8 +12122,8 @@ SQLITE_API void sqlite3changegroup_delete(sqlite3_changegroup*);
 **
 ** <dt>INSERT Changes<dd>
 **   For each INSERT change, an attempt is made to insert the new row into
-**   the database. If the changeset row contains fewer fields than the
-**   database table, the trailing fields are populated with their default
+**   the database. If the changeset row contains fewer fields_ than the
+**   database table, the trailing fields_ are populated with their default
 **   values.
 **
 **   If the attempt to insert the row fails because the database already
@@ -12146,11 +12146,11 @@ SQLITE_API void sqlite3changegroup_delete(sqlite3_changegroup*);
 **   stored in the changeset the row is updated within the target database.
 **
 **   If a row with matching primary key values is found, but one or more of
-**   the modified non-primary key fields contains a value different from an
+**   the modified non-primary key fields_ contains a value different from an
 **   original row value stored in the changeset, the conflict-handler function
 **   is invoked with [SQLITE_CHANGESET_DATA] as the second argument. Since
-**   UPDATE changes only contain values for non-primary key fields that are
-**   to be modified, only those fields need to match the original values to
+**   UPDATE changes only contain values for non-primary key fields_ that are
+**   to be modified, only those fields_ need to match the original values to
 **   avoid the SQLITE_CHANGESET_DATA conflict-handler callback.
 **
 **   If no row with matching primary key values is found in the database,
@@ -12254,9 +12254,9 @@ SQLITE_API int sqlite3changeset_apply_v2(
 **   for:
 **    <ul>
 **    <li>a delete change if the row being deleted cannot be found,
-**    <li>an update change if the modified fields are already set to
+**    <li>an update change if the modified fields_ are already set to
 **        their new values in the conflicting row, or
-**    <li>an insert change if all fields of the conflicting row match
+**    <li>an insert change if all fields_ of the conflicting row match
 **        the row being inserted.
 **    </ul>
 **
@@ -12280,8 +12280,8 @@ SQLITE_API int sqlite3changeset_apply_v2(
 ** <dt>SQLITE_CHANGESET_DATA<dd>
 **   The conflict handler is invoked with CHANGESET_DATA as the second argument
 **   when processing a DELETE or UPDATE change if a row with the required
-**   PRIMARY KEY fields is present in the database, but one or more other
-**   (non primary-key) fields modified by the update do not contain the
+**   PRIMARY KEY fields_ is present in the database, but one or more other
+**   (non primary-key) fields_ modified by the update do not contain the
 **   expected "before" values.
 **
 **   The conflicting row, in this case, is the database row with the matching
@@ -12290,7 +12290,7 @@ SQLITE_API int sqlite3changeset_apply_v2(
 ** <dt>SQLITE_CHANGESET_NOTFOUND<dd>
 **   The conflict handler is invoked with CHANGESET_NOTFOUND as the second
 **   argument when processing a DELETE or UPDATE change if a row with the
-**   required PRIMARY KEY fields is not present in the database.
+**   required PRIMARY KEY fields_ is not present in the database.
 **
 **   There is no conflicting row in this case. The results of invoking the
 **   sqlite3changeset_conflict() API are undefined.
@@ -12408,7 +12408,7 @@ SQLITE_API int sqlite3changeset_apply_v2(
 **   This may conflict with a remote UPDATE or DELETE. In both cases the
 **   only possible resolution is OMIT. If the remote operation was a
 **   DELETE, then add no change to the rebased changeset. If the remote
-**   operation was an UPDATE, then the old.* fields of change are updated
+**   operation was an UPDATE, then the old.* fields_ of change are updated
 **   to reflect the new.* values in the UPDATE.
 **
 ** <dt>Local UPDATE<dd>
@@ -12443,7 +12443,7 @@ SQLITE_API int sqlite3changeset_apply_v2(
 **
 ** Note that conflict resolutions from multiple remote changesets are
 ** combined on a per-field basis, not per-row. This means that in the
-** case of multiple remote UPDATE operations, some fields of a single
+** case of multiple remote UPDATE operations, some fields_ of a single
 ** local change may be rebased for REPLACE while others are rebased for
 ** OMIT.
 **

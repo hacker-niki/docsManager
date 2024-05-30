@@ -30,7 +30,7 @@ Document Generator::generate(Template &aTemplate, const std::string &name) {
 
                     vectorStrings(i);
                     vectorStrings(i);
-                    auto x = aTemplate.fields[k++].get_content();
+                    auto x = aTemplate.fields_[k++].get_content();
                     vectorStrings(i, x);
                     i += x.size();
                     for (int j = i; j < vectorStrings.size; j++) {
@@ -84,7 +84,7 @@ void Generator::generate(Template &aTemplate) {
                                 break;
                             }
                         }
-                        aTemplate.fields.emplace_back(tmp);
+                        aTemplate.fields_.emplace_back(tmp);
                     }
                 }
             }

@@ -6,26 +6,34 @@
 #define REPOSITORY_H
 
 #include "../Interfaces/IRepository.h"
+#include "../sqlite/sqlite3.h"
 
 class TemplateRepository : public IRepository<Template> {
 
 private:
     std::vector<Template> templates_;
+    sqlite3 *db_;
+
 public:
 
-    TemplateRepository() = default;
 
-    void add(const Template &temp) override;
+    TemplateRepository(sqlite3 *db);
+
+    void add(Template temp) override;
 
     Template &get(int id) override;
 
     void remove(int id) override;
 
     int get_size() override {
-        return templates_.size();   
+        return templates_.size();
     }
 
     std::vector<Template> get_all() override;
+    
+    void save() override;
+
+    void update() override;
 
 };
 

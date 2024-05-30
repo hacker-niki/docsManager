@@ -7,18 +7,20 @@
 
 
 #include "../Interfaces/IRepository.h"
+#include "../sqlite/sqlite3.h"
 
 
 class DocumentRepository : public IRepository<Document> {
 private:
     std::vector<Document> documents_;
+    sqlite3 *db_;
 public:
 
-    DocumentRepository() = default;
+    DocumentRepository(sqlite3 *db);
 
-    void add(const Document &document) override;
+    void add(Document document) override;
 
-    Document& get(int id) override;
+    Document &get(int id) override;
 
     void remove(int id) override;
 
@@ -27,6 +29,11 @@ public:
     }
 
     std::vector<Document> get_all() override;
+
+    void update() override;
+
+    void save() override;
+
 };
 
 

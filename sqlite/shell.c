@@ -1627,7 +1627,7 @@ static FILE *iotrace = 0;
 /*
 ** This routine works like printf in that its first argument is a
 ** format string and subsequent arguments are values to be substituted
-** in place of % fields.  The result of formatting this string
+** in place of % fields_.  The result of formatting this string
 ** is written to iotrace.
 */
 #ifdef SQLITE_ENABLE_IOTRACE
@@ -5853,7 +5853,7 @@ struct series_cursor {
 **
 ** All this routine needs to do is:
 **
-**    (1) Allocate the series_vtab object and initialize all fields.
+**    (1) Allocate the series_vtab object and initialize all fields_.
 **
 **    (2) Tell SQLite (via the sqlite3_declare_vtab() interface) what the
 **        result set of queries against generate_series will look like.
@@ -8218,7 +8218,7 @@ struct completion_cursor {
 **
 ** All this routine needs to do is:
 **
-**    (1) Allocate the completion_vtab object and initialize all fields.
+**    (1) Allocate the completion_vtab object and initialize all fields_.
 **
 **    (2) Tell SQLite (via the sqlite3_declare_vtab() interface) what the
 **        result set of queries against completion will look like.
@@ -8305,7 +8305,7 @@ static int completionClose(sqlite3_vtab_cursor *cur){
 /*
 ** Advance a completion_cursor to its next row of output.
 **
-** The ->ePhase, ->j, and ->pStmt fields of the completion_cursor object
+** The ->ePhase, ->j, and ->pStmt fields_ of the completion_cursor object
 ** record the current state of the scan.  This routine sets ->zCurrentRow
 ** to the current row of output and then returns.  If no more rows remain,
 ** then ->ePhase is set to COMPLETION_EOF which will signal the virtual
@@ -9647,7 +9647,7 @@ static void zipfileDequote(char *zIn){
 **   argv[0]   -> module name  ("zipfile")
 **   argv[1]   -> database name
 **   argv[2]   -> table name
-**   argv[...] -> "column name" and other module argument fields.
+**   argv[...] -> "column name" and other module argument fields_.
 */
 static int zipfileConnect(
   sqlite3 *db,
@@ -9976,7 +9976,7 @@ static int zipfileReadLFH(
 
 
 /*
-** Buffer aExtra (size nExtra bytes) contains zip archive "extra" fields.
+** Buffer aExtra (size nExtra bytes) contains zip archive "extra" fields_.
 ** Scan through this buffer to find an "extra-timestamp" field. If one
 ** exists, extract the 32-bit modification-timestamp from it and store
 ** the value in output parameter *pmTime.
@@ -10017,7 +10017,7 @@ static int zipfileScanExtra(u8 *aExtra, int nExtra, u32 *pmTime){
 
 /*
 ** Convert the standard MS-DOS timestamp stored in the mTime and mDate
-** fields of the CDS structure passed as the only argument to a 32-bit
+** fields_ of the CDS structure passed as the only argument to a 32-bit
 ** UNIX seconds-since-the-epoch timestamp. Return the result.
 **
 ** "Standard" MS-DOS time format:
@@ -10056,7 +10056,7 @@ static u32 zipfileMtime(ZipfileCDS *pCDS){
 
 /*
 ** The opposite of zipfileMtime(). This function populates the mTime and
-** mDate fields of the CDS structure passed as the first argument according
+** mDate fields_ of the CDS structure passed as the first argument according
 ** to the UNIX timestamp value passed as the second.
 */
 static void zipfileMtimeToDos(ZipfileCDS *pCds, u32 mUnixTime){
@@ -14758,7 +14758,7 @@ static void dbdataValue(
 ** on the page.  */
 #define DBDATA_MX_CELL(pgsz) ((pgsz-8)/6)
 
-/* Maximum number of fields that may appear in a single record. This is
+/* Maximum number of fields_ that may appear in a single record. This is
 ** the "hard-limit", according to comments in sqliteLimit.h. */
 #define DBDATA_MX_FIELD 32676
 
@@ -16486,7 +16486,7 @@ static int recoverWriteSchema2(sqlite3_recover *p){
 ** Otherwise, if the recover handle is configured to create an output
 ** database (was created by sqlite3_recover_init()), then this function
 ** prepares and returns an SQL statement to INSERT a new record into table
-** pTab, assuming the first nField fields of a record extracted from disk
+** pTab, assuming the first nField fields_ of a record extracted from disk
 ** are valid.
 **
 ** For example, if table pTab is:
@@ -16605,7 +16605,7 @@ static RecoverTable *recoverFindTable(sqlite3_recover *p, u32 iRoot){
 */
 static char *recoverLostAndFoundCreate(
   sqlite3_recover *p,             /* Recover object */
-  int nField                      /* Number of column fields in new table */
+  int nField                      /* Number of column fields_ in new table */
 ){
   char *zTbl = 0;
   sqlite3_stmt *pProbe = 0;
@@ -16667,7 +16667,7 @@ static char *recoverLostAndFoundCreate(
 /*
 ** Synthesize and prepare an INSERT statement to write to the lost_and_found
 ** table in the output database. The name of the table is zTab, and it has
-** nField c* fields.
+** nField c* fields_.
 */
 static sqlite3_stmt *recoverLostAndFoundInsert(
   sqlite3_recover *p,
@@ -17541,7 +17541,7 @@ static int recoverVfsRead(sqlite3_file *pFd, void *aBuf, int nByte, i64 iOff){
       sqlite3_randomness(16, aBuf);
     }else
     if( rc==SQLITE_OK && iOff==0 && nByte>=108 ){
-      /* Ensure that the database has a valid header file. The only fields
+      /* Ensure that the database has a valid header file. The only fields_
       ** that really matter to recovery are:
       **
       **   + Database page size (16-bits at offset 16)
@@ -17555,8 +17555,8 @@ static int recoverVfsRead(sqlite3_file *pFd, void *aBuf, int nByte, i64 iOff){
       **   + the wal-mode flags (16-bits at offset 18)
       **
       ** We also try to preserve the auto-vacuum, incr-value, user-version
-      ** and application-id fields - all 32 bit quantities at offsets 
-      ** 52, 60, 64 and 68. All other fields are set to known good values.
+      ** and application-id fields_ - all 32 bit quantities at offsets 
+      ** 52, 60, 64 and 68. All other fields_ are set to known good values.
       **
       ** Byte offset 105 should also contain the page-size as a 16-bit 
       ** integer.
@@ -25840,7 +25840,7 @@ static int do_meta_command(char *zLine, ShellState *p){
         /*
         ** For CSV mode, per RFC 4180, accept EOF in lieu of final
         ** record terminator but only for last field of multi-field row.
-        ** (If there are too few fields, it's not valid CSV anyway.)
+        ** (If there are too few fields_, it's not valid CSV anyway.)
         */
         if( z==0 && (xRead==csv_read_one_field) && i==nCol-1 && i>0 ){
           z = "";

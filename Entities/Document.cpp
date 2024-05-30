@@ -6,14 +6,13 @@
 #include "Document.h"
 #include "../FileManager.h"
 
-Document::Document(const std::string &name, const std::string &filepath) {
+Document::Document(const std::string &name, const std::string &filepath) : type_("Document") {
 
     while (true) {
         this->name_ = name;
         if (!FileManager::fileExists(filepath))
             break;
         this->filepath_ = filepath;
-        this->type_ = "Document";
         return;
     }
     throw std::invalid_argument("Document didn't created 🙂");
@@ -32,16 +31,16 @@ std::string Document::get_path() {
     return filepath_;
 }
 
-std::string Document::to_string() {
+std::string Document::to_string() const {
     nlohmann::json j;
     j["name"] = name_;
     j["type"] = type_;
     j["filepath"] = filepath_;
-    j["fields"] = nlohmann::json::array();
+    j["fields_"] = nlohmann::json::array();
 
-    for (const auto &field : fields_) {
+    for (auto &field: fields_) {
         // Assuming Field class has a to_string method
-        j["fields"].push_back(field.to_string());
+        j["fields_"].push_back(field.to_string());
     }
 
     return j.dump();
@@ -56,7 +55,7 @@ Document Document::from_string(const std::string &str) {
 
     fields_.clear();
 
-    for (const auto &field_json : j["fields"]) {
+    for (const auto &field_json: j["fields_"]) {
         Field field;
         // Assuming Field class has a from_string method
         field.from_string(field_json.get<std::string>());

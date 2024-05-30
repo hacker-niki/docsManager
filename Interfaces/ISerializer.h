@@ -10,7 +10,7 @@
 
 template<typename T>
 class ISerializer {
-    virtual std::string to_string() = 0;
+    virtual std::string to_string() const = 0;
 
     virtual T from_string(const std::string &str) = 0;
 };
