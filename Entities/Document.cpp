@@ -31,3 +31,37 @@ std::string Document::get_type() {
 std::string Document::get_path() {
     return filepath_;
 }
+
+std::string Document::to_string() {
+    nlohmann::json j;
+    j["name"] = name_;
+    j["type"] = type_;
+    j["filepath"] = filepath_;
+    j["fields"] = nlohmann::json::array();
+
+    for (const auto &field : fields_) {
+        // Assuming Field class has a to_string method
+        j["fields"].push_back(field.to_string());
+    }
+
+    return j.dump();
+}
+
+Document Document::from_string(const std::string &str) {
+    nlohmann::json j = nlohmann::json::parse(str);
+
+    name_ = j["name"].get<std::string>();
+    type_ = j["type"].get<std::string>();
+    filepath_ = j["filepath"].get<std::string>();
+
+    fields_.clear();
+
+    for (const auto &field_json : j["fields"]) {
+        Field field;
+        // Assuming Field class has a from_string method
+        field.from_string(field_json.get<std::string>());
+        fields_.push_back(field);
+    }
+
+    return *this;
+}

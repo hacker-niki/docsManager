@@ -15,6 +15,9 @@ public:
     virtual std::string get_type() = 0;
 
     virtual std::string get_path() = 0;
+
+//    virtual std::string to_string() = 0;
+    
 };
 
 #endif //IDOCUMENT_H

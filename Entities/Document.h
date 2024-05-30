@@ -9,24 +9,28 @@
 
 #include "../Interfaces/IDocument.h"
 #include "Field.h"
+#include "../Interfaces/ISerializer.h"
 
-class Document : public IDocument {
-protected:
-    std::string name_;
-    std::string type_;
-    std::string filepath_;
-    std::vector<Field> fields_;
+class Document : public IDocument, public ISerializer<Document> {
+        protected:
+        std::string name_;
+        std::string type_;
+        std::string filepath_;
+        std::vector<Field> fields_;
 
 
-public:
-    Document(const std::string &name, const std::string &filepath);
+        public:
+        Document(const std::string &name, const std::string &filepath);
 
-    virtual std::string get_name() override;
+        virtual std::string get_name() override;
 
-    virtual std::string get_type() override;
+        virtual std::string get_type() override;
 
-    virtual std::string get_path() override;
+        virtual std::string get_path() override;
 
+        virtual std::string to_string() override;
+        
+        virtual Document from_string(const std::string &str) override;
 };
 
 #endif //DOCUMENT_H

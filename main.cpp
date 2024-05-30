@@ -5,7 +5,7 @@ using namespace std;
 
 int main() {
     auto man = Manager();
-    man.create_template("my_test.docx", "template");
+    man.create_template("gen_report4.docx", "template");
     int cnt = 0;
     for (auto x: man.getTempate(0).get_fields()) {
         std::cout << x.get_content() << '\n';
@@ -17,7 +17,9 @@ int main() {
         }
         ++cnt;
     }
+
     man.add_document(0, "document");
     man.get_documents();
     return 0;
+    
 }

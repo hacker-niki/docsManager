@@ -17,7 +17,6 @@ public:
     static std::string getFileName(const std::string &filePath);
     
     static std::string read_docx(std::string filePath);
-
     static bool fileExists(const std::string& filename) {
         std::ifstream file(filename);
         return file.good();

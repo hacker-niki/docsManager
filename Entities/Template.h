@@ -8,7 +8,7 @@
 #include "Document.h"
 
 
-class Template : public Document {
+class Template : public Document, public ISerializer<Template> {
 
 private:
     std::vector<Field> fields;
