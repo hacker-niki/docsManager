@@ -18,7 +18,6 @@ Document::Document(const std::string &name, const std::string &filepath) : type_
     throw std::invalid_argument("Document didn't created 🙂");
 }
 
-
 std::string Document::get_name() {
     return name_;
 }

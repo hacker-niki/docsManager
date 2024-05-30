@@ -87,18 +87,8 @@ void TemplateRepository::save() {
 }
 
 TemplateRepository::TemplateRepository(sqlite3 *db) : db_(db) {
-    // Ensure the Documents table exists
+    // Ensure the Templates table exists`
     char *errMsg;
-    const char *sql_documents = "CREATE TABLE IF NOT EXISTS Documents ("
-                                "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                                "data TEXT NOT NULL);";
-    if (sqlite3_exec(db_, sql_documents, nullptr, nullptr, &errMsg) != SQLITE_OK) {
-        std::string error_message = "SQL error: " + std::string(errMsg);
-        sqlite3_free(errMsg);
-        throw std::runtime_error(error_message);
-    }
-
-    // Ensure the Templates table exists
     const char *sql_templates = "CREATE TABLE IF NOT EXISTS Templates ("
                                 "id INTEGER PRIMARY KEY AUTOINCREMENT, "
                                 "data TEXT NOT NULL);";

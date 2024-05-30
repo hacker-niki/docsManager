@@ -15,3 +15,13 @@ int RepMaster::update() {
     templateRepository_->update();
     return 0;
 }
+
+RepMaster::RepMaster() {
+    db_ = nullptr;
+    if (sqlite3_open("docsmanager.db", &db_)) {
+        throw std::runtime_error("Can't open database: " + std::string(sqlite3_errmsg(db_)));
+    }
+
+    templateRepository_ = std::make_shared<TemplateRepository>(db_);
+    documentRepository_ = std::make_shared<DocumentRepository>(db_);
+}
