@@ -21,7 +21,7 @@ add_subdirectory(Manager)
 
 target_link_libraries(docsManager PRIVATE Qt6::Widgets Qt6::Core Qt6::Gui)
 
-target_link_libraries(docsManager LINK_PUBLIC docsManagerLib)
+target_link_libraries(docsManager PRIVATE docsManagerLib duckx::duckx sqlite)
 
 set_target_properties(docsManager PROPERTIES
         WIN32_EXECUTABLE ON

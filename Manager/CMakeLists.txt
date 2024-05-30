@@ -12,6 +12,10 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/DuckX/include"
         "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/thirdparty/pugixml"
         "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/thirdparty/zip")
 
+set(SOURCES
+        "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/src/duckx.cpp"
+)
+
 add_library(duckx STATIC ${SOURCES} ${THIRD_PARTY_SRC})
 add_library(duckx::duckx ALIAS duckx)
 
@@ -44,7 +48,7 @@ add_library(docsManagerLib STATIC Entities/Document.cpp
 )
 #target_link_libraries(docsManagerLib PUBLIC )
 
-target_link_libraries(docsManagerLib duckx::duckx sqlite)
+#target_link_libraries(docsManagerLib duckx::duckx sqlite)
 
 #find_package(Qt6 REQUIRED COMPONENTS Widgets)
 #
