@@ -7,36 +7,46 @@ add_executable(docsManager main.cpp)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
-add_library(lib STATIC Entities/Document.cpp
-        Entities/Document.h
-        Interfaces/IDocument.h
-        Interfaces/IGenerator.h
-        Interfaces/IRepository.h
+set(THIRD_PARTY_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/thirdparty/pugixml/pugixml.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/thirdparty/pugixml/pugiconfig.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/thirdparty/zip/zip.h")
+set(THIRD_PARTY_SRC "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/thirdparty/zip/zip.c")
+
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/DuckX/include"
+        "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/thirdparty/pugixml"
+        "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/thirdparty/zip")
+
+add_library(duckx STATIC ${SOURCES} ${THIRD_PARTY_SRC})
+add_library(duckx::duckx ALIAS duckx)
+
+set(HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/include/duckx.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/include/constants.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/include/duckxiterator.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}Entities/Document.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}Interfaces/IDocument.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}Interfaces/IGenerator.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}Interfaces/IRepository.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}Manager.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}Generator.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}Entities/Template.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}Repository/TemplateRepository.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}Entities/Field.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}FileManager.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}Repository/DocumentRepository.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}Repository/RepMaster.h")
+
+add_library(docsManagerLib STATIC Entities/Document.cpp
         Manager.cpp
-        Manager.h
         Generator.cpp
-        Generator.h
         Entities/Template.cpp
-        Entities/Template.h
         Repository/TemplateRepository.cpp
-        Repository/TemplateRepository.h
-        Entities/Field.h
         FileManager.cpp
-        FileManager.h
         Repository/DocumentRepository.cpp
-        Repository/DocumentRepository.h
         Repository/RepMaster.cpp
-        Repository/RepMaster.h
-        Interfaces/ISerializer.h
         sqlite/sqlite3.c
-        sqlite/shell.c
 )
 
-#target_compile_definitions(lib PUBLIC lib)
+target_link_libraries(docsManagerLib PUBLIC duckx::duckx)
+target_link_libraries(docsManagerLib PUBLIC leveldb)
 
-find_package(duckx CONFIG REQUIRED)
-
-target_link_libraries(lib PUBLIC duckx::duckx)
-target_link_libraries(lib PUBLIC leveldb)
-
-target_link_libraries(docsManager LINK_PUBLIC lib)
+target_link_libraries(docsManager LINK_PUBLIC docsManagerLib)
