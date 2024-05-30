@@ -3,50 +3,27 @@ project(docsManager)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(docsManager main.cpp)
+set(HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/../Manger/Manager.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../Manager/Generator.h")
 
-option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
 
-set(THIRD_PARTY_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/thirdparty/pugixml/pugixml.hpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/thirdparty/pugixml/pugiconfig.hpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/thirdparty/zip/zip.h")
-set(THIRD_PARTY_SRC "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/thirdparty/zip/zip.c")
+qt_standard_project_setup()
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/DuckX/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/thirdparty/pugixml"
-        "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/thirdparty/zip")
+qt_add_executable(docsManager app/main.cpp
+        app/MainWindow.cpp
+        app/MainWindow.h
+        app/MainWindow.cpp
+        app/MainWindow.h
+        app/MainWindow.ui)
 
-add_library(duckx STATIC ${SOURCES} ${THIRD_PARTY_SRC})
-add_library(duckx::duckx ALIAS duckx)
+add_subdirectory(Manager)
 
-set(HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/include/duckx.hpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/include/constants.hpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/DuckX/include/duckxiterator.hpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}Entities/Document.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}Interfaces/IDocument.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}Interfaces/IGenerator.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}Interfaces/IRepository.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}Manager.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}Generator.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}Entities/Template.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}Repository/TemplateRepository.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}Entities/Field.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}FileManager.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}Repository/DocumentRepository.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}Repository/RepMaster.h")
-
-add_library(docsManagerLib STATIC Entities/Document.cpp
-        Manager.cpp
-        Generator.cpp
-        Entities/Template.cpp
-        Repository/TemplateRepository.cpp
-        FileManager.cpp
-        Repository/DocumentRepository.cpp
-        Repository/RepMaster.cpp
-        sqlite/sqlite3.c
-)
-
-target_link_libraries(docsManagerLib PUBLIC duckx::duckx)
-target_link_libraries(docsManagerLib PUBLIC leveldb)
+target_link_libraries(docsManager PRIVATE Qt6::Widgets Qt6::Core Qt6::Gui)
 
 target_link_libraries(docsManager LINK_PUBLIC docsManagerLib)
+
+set_target_properties(docsManager PROPERTIES
+        WIN32_EXECUTABLE ON
+        MACOSX_BUNDLE ON
+)
