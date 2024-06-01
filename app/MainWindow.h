@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QListWidgetItem>
 #include "../Manager/Manager.h"
 
 QT_BEGIN_NAMESPACE
@@ -9,15 +10,15 @@ namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     MainWindow(QWidget *parent = nullptr);
 
     ~MainWindow();
 
-private slots:
-
+private
+    slots:
     void onOpenButtonClicked();
 
     void onNewButtonClicked();
@@ -25,6 +26,8 @@ private slots:
     void updateTemplateList();
 
     void updateDocumentList();
+
+    void on_openNewWindowButton_clicked(QListWidgetItem *item);
 
 private:
     Ui::MainWindow *ui;

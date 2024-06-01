@@ -26,7 +26,6 @@ void Manager::create_template(std::string path, std::string name) {
     auto temp = Template(std::move(name), filePath);
     generator_->generate(temp);
     repMaster_->templateRepository_->add(temp);
-    repMaster_->save();
 }
 
 void Manager::add_document(int template_id, std::string name) {
@@ -34,7 +33,6 @@ void Manager::add_document(int template_id, std::string name) {
     std::string filePath = "./templates/" + FileManager::getFileName(templ.get_path());
     FileManager::copyFile(templ.get_path(), filePath);
     generator_->generate(templ, name);
-    repMaster_->save();
 }
 
 void Manager::add_document(std::string filepath, std::string name) {
@@ -42,7 +40,6 @@ void Manager::add_document(std::string filepath, std::string name) {
     FileManager::copyFile(filepath, filePath);
     auto doc = Document(name, filePath);
     repMaster_->documentRepository_->add(doc);
-    repMaster_->save();
 }
 
 std::vector<Document> Manager::get_documents() {
@@ -68,7 +65,6 @@ void Manager::create_template_form_blank(std::string name) {
     auto temp = Template(std::move(name), filePath);
     generator_->generate(temp);
     repMaster_->templateRepository_->add(temp);
-    repMaster_->save();
 }
 
 Manager::~Manager() = default;

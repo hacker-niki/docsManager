@@ -3,31 +3,64 @@
 //
 
 #include <stdexcept>
+#include <iostream>
 #include "../Entities/Document.h"
 #include "TemplateRepository.h"
 
 void TemplateRepository::add(Template temp) {
-    templates_.push_back(temp);
+    sqlite3_stmt *stmt;
+    const char *insert_sql = "INSERT INTO Templates (data) VALUES (?);";
+
+    if (sqlite3_prepare_v2(db_, insert_sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        throw std::runtime_error("Failed to prepare statement");
+    }
+
+    std::string serialized = temp.to_string();
+    if (sqlite3_bind_text(stmt, 1, serialized.c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK) {
+        throw std::runtime_error("Failed to bind text");
+    }
+
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        throw std::runtime_error("Failed to execute statement");
+    }
+
+    sqlite3_finalize(stmt);
+    update();
 }
 
 Template &TemplateRepository::get(int id) {
-    while (true) {
-        if (id < 0 || id >= templates_.size())
-            break;
-        return templates_[id];
+    for (auto &temp: templates_) {
+        if (temp.get_id() == id) {
+            return temp;
+        }
     }
     throw std::out_of_range("There's no template with such id🙂");
 }
 
 void TemplateRepository::remove(int id) {
-    while (true) {
-        if (id < 0 || id >= templates_.size())
-            break;
-        templates_.erase(std::next(templates_.begin(), id));
-        return;
-    }
-    throw std::out_of_range("There's no template with such id🙂");
+    sqlite3_stmt *stmt;
+    const char *delete_sql = "DELETE FROM Templates WHERE id = ?;";
 
+    if (sqlite3_prepare_v2(db_, delete_sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        throw std::runtime_error("Failed to prepare delete statement");
+    }
+
+    // Bind the ID parameter
+    if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK) {
+        sqlite3_finalize(stmt);
+        throw std::runtime_error("Failed to bind ID");
+    }
+
+    // Execute the delete statement
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        sqlite3_finalize(stmt);
+        throw std::runtime_error("Failed to execute delete statement");
+    }
+
+    // Finalize the statement
+    sqlite3_finalize(stmt);
+    update();
+//    throw std::out_of_range("There's no template with such id🙂");
 }
 
 std::vector<Template> TemplateRepository::get_all() {
@@ -37,17 +70,19 @@ std::vector<Template> TemplateRepository::get_all() {
 void TemplateRepository::update() {
     templates_.clear();
 
-    const char *select_sql = "SELECT data FROM Templates;";
+    const char *select_sql = "SELECT id, data FROM Templates;";
     sqlite3_stmt *stmt;
     if (sqlite3_prepare_v2(db_, select_sql, -1, &stmt, nullptr) != SQLITE_OK) {
         throw std::runtime_error("Failed to prepare statement");
     }
 
     while (sqlite3_step(stmt) == SQLITE_ROW) {
-        const unsigned char *text = sqlite3_column_text(stmt, 0);
+        int id = sqlite3_column_int(stmt, 0); // Retrieve the id column
+        const unsigned char *text = sqlite3_column_text(stmt, 1); // Retrieve the data column
         if (text) {
             Template temp;
-            temp.from_string(reinterpret_cast<const char *>(text));
+            temp.set_id(id); // Set the template id
+            temp.from_string(reinterpret_cast<const char *>(text)); // Set the template data
             templates_.push_back(temp);
         }
     }

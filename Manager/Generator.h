@@ -113,7 +113,6 @@ public:
     void generate(Template &aTemplate) override;
 
     void generate(Document &aDocument) override;
-
 };
 
 #endif //GENERATOR_H

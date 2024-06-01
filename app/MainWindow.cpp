@@ -1,7 +1,9 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
+#include "InfoWindow.h"
 #include <QFileDialog>
 #include <QInputDialog>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
@@ -9,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     // Connect menu actions to slots
     connect(ui->OpenButton, &QAction::triggered, this, &MainWindow::onOpenButtonClicked);
     connect(ui->NewButton, &QAction::triggered, this, &MainWindow::onNewButtonClicked);
-
+    connect(ui->templatesWidget, &QListWidget::itemClicked, this, &MainWindow::on_openNewWindowButton_clicked);
     // Initial population of lists
     updateTemplateList();
     updateDocumentList();
@@ -46,7 +48,8 @@ void MainWindow::updateTemplateList() {
     ui->templatesWidget->clear();
     auto templates = manager_.get_templates();
     for (auto &temp: templates) {
-        QListWidgetItem * item = new QListWidgetItem(QString::fromStdString(temp.get_name()));
+        auto *item = new QListWidgetItem(QString::fromStdString(temp.get_name()));
+        item->setData(Qt::UserRole, temp.get_id());
         ui->templatesWidget->addItem(item);
     }
 }
@@ -55,7 +58,17 @@ void MainWindow::updateDocumentList() {
     ui->documentsWidget->clear();
     auto documents = manager_.get_documents();
     for (auto &doc: documents) {
-        QListWidgetItem * item = new QListWidgetItem(QString::fromStdString(doc.get_name()));
+        auto *item = new QListWidgetItem(QString::fromStdString(doc.get_name()));
+        item->setData(Qt::UserRole, doc.get_id());
         ui->documentsWidget->addItem(item);
+    }
+}
+
+void MainWindow::on_openNewWindowButton_clicked(QListWidgetItem *item) {
+    if (item) {
+        int id = item->data(Qt::UserRole).toInt();
+        auto infoWindow = new InfoWindow(this, &(manager_.getTempate(id)));
+        infoWindow->show();
+        infoWindow->raise();
     }
 }

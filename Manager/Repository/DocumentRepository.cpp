@@ -3,29 +3,62 @@
 //
 
 #include <stdexcept>
+#include <iostream>
 #include "DocumentRepository.h"
 
 void DocumentRepository::add(Document document) {
-    documents_.push_back(document);
+    sqlite3_stmt *stmt;
+    const char *insert_sql = "INSERT INTO Documents (data) VALUES (?);";
+
+    if (sqlite3_prepare_v2(db_, insert_sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        throw std::runtime_error("Failed to prepare statement");
+    }
+
+    std::string serialized = document.to_string();
+    if (sqlite3_bind_text(stmt, 1, serialized.c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK) {
+        throw std::runtime_error("Failed to bind text");
+    }
+
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        throw std::runtime_error("Failed to execute statement");
+    }
+
+    sqlite3_finalize(stmt);
+    update();
 }
 
 Document &DocumentRepository::get(int id) {
-    while (true) {
-        if (id < 0 || id >= documents_.size())
-            break;
-        return documents_[id];
+    for (auto &doc: documents_) {
+        if (doc.get_id() == id) {
+            return doc;
+        }
     }
     throw std::out_of_range("There's no document with such id🙂");
 }
 
 void DocumentRepository::remove(int id) {
-    while (true) {
-        if (id < 0 || id >= documents_.size())
-            break;
-        documents_.erase(std::next(documents_.begin(), id));
-        return;
+    sqlite3_stmt *stmt;
+    const char *delete_sql = "DELETE FROM Documents WHERE id = ?;";
+
+    if (sqlite3_prepare_v2(db_, delete_sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        throw std::runtime_error("Failed to prepare delete statement");
     }
-    throw std::out_of_range("There's no document with such id🙂");
+
+    // Bind the ID parameter
+    if (sqlite3_bind_int(stmt, 1, id) != SQLITE_OK) {
+        sqlite3_finalize(stmt);
+        throw std::runtime_error("Failed to bind ID");
+    }
+
+    // Execute the delete statement
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        sqlite3_finalize(stmt);
+        throw std::runtime_error("Failed to execute delete statement");
+    }
+
+    // Finalize the statement
+    sqlite3_finalize(stmt);
+    update();
 }
 
 std::vector<Document> DocumentRepository::get_all() {
@@ -35,17 +68,19 @@ std::vector<Document> DocumentRepository::get_all() {
 void DocumentRepository::update() {
     documents_.clear();
 
-    const char *select_sql = "SELECT data FROM Documents;";
+    const char *select_sql = "SELECT id, data FROM Documents;";
     sqlite3_stmt *stmt;
     if (sqlite3_prepare_v2(db_, select_sql, -1, &stmt, nullptr) != SQLITE_OK) {
         throw std::runtime_error("Failed to prepare statement");
     }
 
     while (sqlite3_step(stmt) == SQLITE_ROW) {
-        const unsigned char *text = sqlite3_column_text(stmt, 0);
+        int id = sqlite3_column_int(stmt, 0); // Retrieve the id column
+        const unsigned char *text = sqlite3_column_text(stmt, 1); // Retrieve the data column
         if (text) {
             Document document;
-            document.from_string(reinterpret_cast<const char *>(text));
+            document.set_id(id); // Set the document id
+            document.from_string(reinterpret_cast<const char *>(text)); // Set the document data
             documents_.push_back(document);
         }
     }

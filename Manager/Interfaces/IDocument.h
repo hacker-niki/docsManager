@@ -8,7 +8,6 @@
 #include <string>
 
 class IDocument {
-    int Id;
 public:
 
     virtual ~IDocument() = default;

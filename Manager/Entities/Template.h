@@ -17,6 +17,7 @@ private:
     std::string type_;
     std::string filepath_;
     std::vector<Field> fields_;
+    int id;
 
 public:
 
@@ -50,6 +51,13 @@ public:
     friend class Generator;
 
     std::string to_string() const override;
+
+    int get_id() { return id; }
+
+    void set_id(int i) {
+        std::cout << i;
+        this->id = i;
+    }
 
     Template from_string(const std::string &str) override;
 

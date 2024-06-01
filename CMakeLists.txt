@@ -15,7 +15,10 @@ qt_add_executable(docsManager app/main.cpp
         app/MainWindow.h
         app/MainWindow.cpp
         app/MainWindow.h
-        app/MainWindow.ui)
+        app/MainWindow.ui
+        app/InfoWindow.cpp
+        app/InfoWindow.h
+        app/InfoWindow.ui)
 
 add_subdirectory(Manager)
 
