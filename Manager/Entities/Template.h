@@ -26,25 +26,25 @@ public:
     Template(std::string name, std::string filepath) : name_(std::move(name)), filepath_(std::move(filepath)),
                                                        type_("Template") {}
 
-    std::string get_name() override {
+    std::string get_name() const override {
         return name_;
     }
 
-    std::string get_type() override {
+    std::string get_type() const override {
         return type_;
     }
 
-    std::string get_path() override {
+    std::string get_path() const override {
         return filepath_;
     }
 
-    Field get_field(int id);
+    Field get_field(int id) const;
 
-    int get_fields_count() {
+    int get_fields_count() const {
         return static_cast<int>(fields_.size());
     }
 
-    std::vector<Field> get_fields();
+    std::vector<Field> get_fields() const;
 
     void set_field(int id, std::string content);
 
@@ -55,7 +55,7 @@ public:
     int get_id() { return id; }
 
     void set_id(int i) {
-        std::cout << i;
+//        std::cout << i;
         this->id = i;
     }
 

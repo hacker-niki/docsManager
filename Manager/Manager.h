@@ -15,6 +15,7 @@ class Manager {
     std::shared_ptr<RepMaster> repMaster_;
     std::shared_ptr<IGenerator> generator_;
     std::string folder_name_;
+    
 public:
     Manager();
 
@@ -32,9 +33,19 @@ public:
 
     void add_document(std::string document, std::string name);
 
-    Template &getTempate(int id);
+    Template getTemplate(int id);
 
-    Document &getDocument(int id);
+    Document getDocument(int id);
+
+    void deleteDocument(int id);
+
+    void deleteTemplate(int id);
+
+    void updateDocument(int id, Document document);
+
+    void updateTemplate(int id, Template temp);
+
+    void create_document_from_template(Template temp, std::string name);
 };
 
 #endif //MANAGER_H

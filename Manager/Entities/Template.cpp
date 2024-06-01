@@ -17,7 +17,7 @@ void Template::set_field(int id, std::string content) {
 }
 
 
-Field Template::get_field(int id) {
+Field Template::get_field(int id) const {
     while (true) {
         if (id < 0 || id >= fields_.size())
             break;
@@ -27,7 +27,7 @@ Field Template::get_field(int id) {
 }
 
 
-std::vector<Field> Template::get_fields() {
+std::vector<Field> Template::get_fields() const {
     return fields_;
 }
 

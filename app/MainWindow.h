@@ -10,24 +10,31 @@ namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     MainWindow(QWidget *parent = nullptr);
 
     ~MainWindow();
 
-private
+public
     slots:
-    void onOpenButtonClicked();
-
-    void onNewButtonClicked();
 
     void updateTemplateList();
 
     void updateDocumentList();
+    
+
+private
+    slots:
+
+    void onOpenButtonClicked();
+
+    void onNewButtonClicked();
 
     void on_openNewWindowButton_clicked(QListWidgetItem *item);
+
+    void on_openDocumentWindowButton_clicked(QListWidgetItem *item);
 
 private:
     Ui::MainWindow *ui;

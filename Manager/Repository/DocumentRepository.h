@@ -20,7 +20,7 @@ public:
 
     void add(Document document) override;
 
-    Document &get(int id) override;
+    const Document & get(int id) override;
 
     void remove(int id) override;
 
@@ -34,6 +34,7 @@ public:
 
     void save() override;
 
+    void update_by_id(int id, const Document &doc);
 };
 
 

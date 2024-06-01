@@ -21,7 +21,7 @@ public:
 
     void add(Template temp) override;
 
-    Template &get(int id) override;
+    const Template & get(int id) override;
 
     void remove(int id) override;
 
@@ -35,6 +35,7 @@ public:
 
     void update() override;
 
+    void update_by_id(int id, const Template &temp);
 };
 
 #endif //REPOSITORY_H

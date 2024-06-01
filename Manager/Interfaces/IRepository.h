@@ -15,7 +15,7 @@ class IRepository {
 public:
     virtual void add(T) = 0;
 
-    virtual T &get(int id) = 0;
+    virtual const T &get(int id) = 0;
 
     virtual void remove(int id) = 0;
 

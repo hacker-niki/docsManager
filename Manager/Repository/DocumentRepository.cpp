@@ -27,7 +27,7 @@ void DocumentRepository::add(Document document) {
     update();
 }
 
-Document &DocumentRepository::get(int id) {
+const Document &DocumentRepository::get(int id) {
     for (auto &doc: documents_) {
         if (doc.get_id() == id) {
             return doc;
@@ -59,6 +59,34 @@ void DocumentRepository::remove(int id) {
     // Finalize the statement
     sqlite3_finalize(stmt);
     update();
+}
+
+void DocumentRepository::update_by_id(int id, const Document &doc) {
+    sqlite3_stmt *stmt;
+    const char *update_sql = "UPDATE Documents SET data = ? WHERE id = ?;";
+
+    if (sqlite3_prepare_v2(db_, update_sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        throw std::runtime_error("Failed to prepare update statement");
+    }
+
+    std::string serialized = doc.to_string();
+    if (sqlite3_bind_text(stmt, 1, serialized.c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK) {
+        sqlite3_finalize(stmt);
+        throw std::runtime_error("Failed to bind text");
+    }
+
+    if (sqlite3_bind_int(stmt, 2, id) != SQLITE_OK) {
+        sqlite3_finalize(stmt);
+        throw std::runtime_error("Failed to bind ID");
+    }
+
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        sqlite3_finalize(stmt);
+        throw std::runtime_error("Failed to execute update statement");
+    }
+
+    sqlite3_finalize(stmt);
+    update(); // Refresh the in-memory data
 }
 
 std::vector<Document> DocumentRepository::get_all() {

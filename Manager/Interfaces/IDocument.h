@@ -12,11 +12,11 @@ public:
 
     virtual ~IDocument() = default;
     
-    virtual std::string get_name() = 0;
+    virtual std::string get_name() const = 0;
 
-    virtual std::string get_type() = 0;
+    virtual std::string get_type() const = 0;
 
-    virtual std::string get_path() = 0;
+    virtual std::string get_path() const = 0;
 };
 
 #endif //IDOCUMENT_H

@@ -28,7 +28,7 @@ void TemplateRepository::add(Template temp) {
     update();
 }
 
-Template &TemplateRepository::get(int id) {
+const Template &TemplateRepository::get(int id) {
     for (auto &temp: templates_) {
         if (temp.get_id() == id) {
             return temp;
@@ -61,6 +61,34 @@ void TemplateRepository::remove(int id) {
     sqlite3_finalize(stmt);
     update();
 //    throw std::out_of_range("There's no template with such id🙂");
+}
+
+void TemplateRepository::update_by_id(int id, const Template &temp) {
+    sqlite3_stmt *stmt;
+    const char *update_sql = "UPDATE Templates SET data = ? WHERE id = ?;";
+
+    if (sqlite3_prepare_v2(db_, update_sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        throw std::runtime_error("Failed to prepare update statement");
+    }
+
+    std::string serialized = temp.to_string();
+    if (sqlite3_bind_text(stmt, 1, serialized.c_str(), -1, SQLITE_TRANSIENT) != SQLITE_OK) {
+        sqlite3_finalize(stmt);
+        throw std::runtime_error("Failed to bind text");
+    }
+
+    if (sqlite3_bind_int(stmt, 2, id) != SQLITE_OK) {
+        sqlite3_finalize(stmt);
+        throw std::runtime_error("Failed to bind ID");
+    }
+
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        sqlite3_finalize(stmt);
+        throw std::runtime_error("Failed to execute update statement");
+    }
+
+    sqlite3_finalize(stmt);
+    update(); // Refresh the in-memory data
 }
 
 std::vector<Template> TemplateRepository::get_all() {

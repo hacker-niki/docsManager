@@ -108,7 +108,7 @@ public:
 
     explicit Generator(char field_symbol);
 
-    Document generate(Template &aTemplate, const std::string &name) override;
+    Document generate(const Template &aTemplate, const std::string &name) override;
 
     void generate(Template &aTemplate) override;
 

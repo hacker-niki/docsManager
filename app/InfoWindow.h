@@ -12,16 +12,26 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include "../Manager/Entities/Template.h"
+#include "../Manager/Manager.h"
 
 
 class InfoWindow : public QDialog {
 Q_OBJECT
 
 public:
-    InfoWindow(QMainWindow *parent = nullptr, Template *temp = nullptr);
+    explicit InfoWindow(QMainWindow *parent, Template temp, Manager &manager);
+
+private slots:
+
+    void onSaveButtonClicked();
+
+    void onOpenButtonClicked();
 
 private:
-    int id_;
+    Template template_;
+    std::vector<QLineEdit *> fieldEdits_;
+    Manager &manager_;
+    QMainWindow *parent_;
 };
 
 #endif //DOCSMANAGER_INFOWINDOW_H

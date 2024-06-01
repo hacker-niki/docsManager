@@ -12,7 +12,7 @@ class IGenerator {
 public:
 //    ~IGenerator() = delete;
 
-    virtual Document generate(Template &aTemplate, const std::string &name) = 0;
+    virtual Document generate(const Template &aTemplate, const std::string &name) = 0;
 
     virtual void generate(Template &aTemplate) = 0;
 

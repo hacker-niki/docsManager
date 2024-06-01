@@ -16,7 +16,7 @@ public:
 
     explicit Field(const std::string &field) : name_(field), content_(field) {}
 
-    std::string get_name() {
+    std::string get_name() const {
         return name_;
     }
 
@@ -24,7 +24,8 @@ public:
         this->content_ = field_content;
     }
 
-    std::string get_content() {
+    std::string get_content() const {
+        std::cout << content_;
         return this->content_;
     }
 

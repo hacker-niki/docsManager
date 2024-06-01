@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 #include "InfoWindow.h"
+#include "DocumentWindow.h"
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
@@ -12,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     connect(ui->OpenButton, &QAction::triggered, this, &MainWindow::onOpenButtonClicked);
     connect(ui->NewButton, &QAction::triggered, this, &MainWindow::onNewButtonClicked);
     connect(ui->templatesWidget, &QListWidget::itemClicked, this, &MainWindow::on_openNewWindowButton_clicked);
+    connect(ui->documentsWidget, &QListWidget::itemClicked, this, &MainWindow::on_openDocumentWindowButton_clicked);
+
     // Initial population of lists
     updateTemplateList();
     updateDocumentList();
@@ -22,18 +25,18 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::onOpenButtonClicked() {
-    QString filePath = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("All Files (*)"));
-    if (!filePath.isEmpty()) {
-        // Logic to handle opening a file (e.g., add a document)
-        QString fileName = QFileInfo(filePath).fileName();
-        manager_.add_document(filePath.toStdString(), fileName.toStdString());
+    QString filePath = QFileDialog::getOpenFileName(this, tr("Добавить локумент"), "", tr("All Files (*)"));
+    bool ok;
+    QString name = QInputDialog::getText(this, tr("Документ"), tr("Название документа:"), QLineEdit::Normal, "", &ok);
+    if (ok && !filePath.isEmpty()) {
+        manager_.add_document(filePath.toStdString(), name.toStdString());
         updateDocumentList();
     }
 }
 
 void MainWindow::onNewButtonClicked() {
     bool ok;
-    QString name = QInputDialog::getText(this, tr("New Template"), tr("Template Name:"), QLineEdit::Normal, "", &ok);
+    QString name = QInputDialog::getText(this, tr("Новый шаблон"), tr("Название:"), QLineEdit::Normal, "", &ok);
     if (ok && !name.isEmpty()) {
         QString path = QFileDialog::getOpenFileName(this, tr("Save Template"), "",
                                                     tr("Template Files (*.docx);;All Files (*)"));
@@ -54,6 +57,7 @@ void MainWindow::updateTemplateList() {
     }
 }
 
+
 void MainWindow::updateDocumentList() {
     ui->documentsWidget->clear();
     auto documents = manager_.get_documents();
@@ -67,8 +71,18 @@ void MainWindow::updateDocumentList() {
 void MainWindow::on_openNewWindowButton_clicked(QListWidgetItem *item) {
     if (item) {
         int id = item->data(Qt::UserRole).toInt();
-        auto infoWindow = new InfoWindow(this, &(manager_.getTempate(id)));
+        auto infoWindow = new InfoWindow(this, manager_.getTemplate(id), manager_);
         infoWindow->show();
         infoWindow->raise();
+    }
+}
+
+void MainWindow::on_openDocumentWindowButton_clicked(QListWidgetItem *item) {
+    if (item) {
+        int id = item->data(Qt::UserRole).toInt();
+        auto document = manager_.getDocument(id);
+        auto documentWindow = new DocumentWindow(this, document, manager_);
+        documentWindow->show();
+        documentWindow->raise();
     }
 }

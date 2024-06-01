@@ -25,18 +25,18 @@ public:
 
     Document(const std::string &name, const std::string &filepath);
 
-    std::string get_name() override;
+    std::string get_name() const override;
 
-    std::string get_type() override;
+    std::string get_type() const override;
 
-    std::string get_path() override;
+    std::string get_path() const override;
 
     std::string to_string() const override;
 
     int get_id() const { return this->id; };
 
     void set_id(int i) { 
-        std::cout<<i;
+//        std::cout<<i;
         this->id = i; }
 
     Document from_string(const std::string &str) override;
