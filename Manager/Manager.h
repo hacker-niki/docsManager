@@ -26,6 +26,8 @@ public:
 
     void create_template(std::string path, std::string name);
 
+    void create_template_form_blank(std::string name);
+
     void add_document(int templateId, std::string name);
 
     void add_document(std::string document, std::string name);

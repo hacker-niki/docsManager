@@ -21,6 +21,7 @@ public:
         std::ifstream file(filename);
         return file.good();
     }
+    static void create_directory(std::string dirName);
 };
 
 #endif //DOCSMANAGER_FILEMANAGER_H

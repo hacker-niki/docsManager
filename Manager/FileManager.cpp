@@ -72,3 +72,9 @@ std::string FileManager::read_docx(std::string filePath) {
             throw std::invalid_argument("Error while reading document: unhandled exception🙂");
     }
 }
+
+void FileManager::create_directory(std::string dirName) {
+    if (!std::filesystem::is_directory(dirName) || !std::filesystem::exists(dirName)) {
+        std::filesystem::create_directory(dirName);
+    }
+}

@@ -14,8 +14,8 @@ Generator::Generator(char field_symbol) : field_symbol(field_symbol) {}
 
 Document Generator::generate(Template &aTemplate, const std::string &name) {
     while (true) {
-        FileManager::copyFile(aTemplate.get_path(), "gen_" + aTemplate.get_path());
-        auto document = Document(name, "gen_" + aTemplate.get_path());
+        FileManager::copyFile(aTemplate.get_path(), "documents/" + aTemplate.get_path());
+        auto document = Document(name, "documents/" + aTemplate.get_path());
         duckx::Document doc(document.get_path());
         doc.open();
         int k = 0;

@@ -1,48 +1,61 @@
 #include "MainWindow.h"
-
 #include "ui_MainWindow.h"
+#include <QFileDialog>
+#include <QInputDialog>
 
-MainWindow::MainWindow(QWidget *parent)
-        : QMainWindow(parent), ui(new Ui::MainWindow) {
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
-    connect(ui->createTemplateButton, &QPushButton::clicked, this, &MainWindow::onCreateTemplateClicked);
-    connect(ui->addDocumentButton, &QPushButton::clicked, this, &MainWindow::onAddDocumentClicked);
+    // Connect menu actions to slots
+    connect(ui->OpenButton, &QAction::triggered, this, &MainWindow::onOpenButtonClicked);
+    connect(ui->NewButton, &QAction::triggered, this, &MainWindow::onNewButtonClicked);
 
-    loadDocuments();
-    loadTemplates();
+    // Initial population of lists
+    updateTemplateList();
+    updateDocumentList();
 }
 
 MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::loadDocuments() {
-    ui->documentListWidget->clear();
-    std::vector<Document> documents = manager_.get_documents();
-    for (auto &doc: documents) {
-        ui->documentListWidget->addItem(QString::fromStdString(doc.get_name()));
+void MainWindow::onOpenButtonClicked() {
+    QString filePath = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("All Files (*)"));
+    if (!filePath.isEmpty()) {
+        // Logic to handle opening a file (e.g., add a document)
+        QString fileName = QFileInfo(filePath).fileName();
+        manager_.add_document(filePath.toStdString(), fileName.toStdString());
+        updateDocumentList();
     }
 }
 
-void MainWindow::loadTemplates() {
-    ui->templateListWidget->clear();
-    std::vector<Template> templates = manager_.get_templates();
+void MainWindow::onNewButtonClicked() {
+    bool ok;
+    QString name = QInputDialog::getText(this, tr("New Template"), tr("Template Name:"), QLineEdit::Normal, "", &ok);
+    if (ok && !name.isEmpty()) {
+        QString path = QFileDialog::getOpenFileName(this, tr("Save Template"), "",
+                                                    tr("Template Files (*.docx);;All Files (*)"));
+        if (!path.isEmpty()) {
+            manager_.create_template(path.toStdString(), name.toStdString());
+            updateTemplateList();
+        }
+    }
+}
+
+void MainWindow::updateTemplateList() {
+    ui->templatesWidget->clear();
+    auto templates = manager_.get_templates();
     for (auto &temp: templates) {
-        ui->templateListWidget->addItem(QString::fromStdString(temp.get_name()));
+        QListWidgetItem * item = new QListWidgetItem(QString::fromStdString(temp.get_name()));
+        ui->templatesWidget->addItem(item);
     }
 }
 
-void MainWindow::onCreateTemplateClicked() {
-    QString path = ui->templatePathLineEdit->text();
-    QString name = ui->templateNameLineEdit->text();
-    manager_.create_template(path.toStdString(), name.toStdString());
-    loadTemplates();
-}
-
-void MainWindow::onAddDocumentClicked() {
-    QString name = ui->documentNameLineEdit->text();
-    int templateId = ui->templateListWidget->currentRow(); // Assuming the row index matches the template ID
-    manager_.add_document(templateId, name.toStdString());
-    loadDocuments();
+void MainWindow::updateDocumentList() {
+    ui->documentsWidget->clear();
+    auto documents = manager_.get_documents();
+    for (auto &doc: documents) {
+        QListWidgetItem * item = new QListWidgetItem(QString::fromStdString(doc.get_name()));
+        ui->documentsWidget->addItem(item);
+    }
 }

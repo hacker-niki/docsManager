@@ -18,17 +18,17 @@ public:
 
 private slots:
 
-    void onCreateTemplateClicked();
+    void onOpenButtonClicked();
 
-    void onAddDocumentClicked();
+    void onNewButtonClicked();
+
+    void updateTemplateList();
+
+    void updateDocumentList();
 
 private:
     Ui::MainWindow *ui;
     Manager manager_;
-
-    void loadDocuments();
-
-    void loadTemplates();
 };
 
 #endif // MAINWINDOW_H
