@@ -1,112 +1,33 @@
-//
-// Created by nikita on 22.03.24.
-//
-
-#include <duckx/duckx.hpp>
-#include <cstring>
-#include <iostream>
 #include "Generator.h"
-#include "Entities/Document.h"
-#include "FileManager.h"
+#include "DocxPackage.h"
 
-Generator::Generator(char field_symbol) : field_symbol(field_symbol) {}
+#include <stdexcept>
 
-
-Document Generator::generate(const Template &aTemplate, const std::string &name) {
-    while (true) {
-        FileManager::copyFile(aTemplate.get_path(), "./documents/" + name + ".docx");
-        auto document = Document(name, "./documents/" + name + ".docx");
-        duckx::Document doc(document.get_path());
-        doc.open();
-        int k = 0;
-        for (auto p = doc.paragraphs(); p.has_next(); p.next()) {
-            VectorStrings vectorStrings;
-            for (auto r = p.runs(); r.has_next(); r.next()) {
-                vectorStrings.vector_strings.emplace_back(r.get_text());
-            }
-            vectorStrings.init();
-            for (int i = 0; i < vectorStrings.size - 1; i++) {
-                if (vectorStrings[i] == field_symbol && vectorStrings[i + 1] == field_symbol) {
-
-                    vectorStrings(i);
-                    vectorStrings(i);
-                    auto x = aTemplate.fields_[k++].get_content();
-                    vectorStrings(i, x);
-                    i += x.size();
-                    for (int j = i; j < vectorStrings.size; j++) {
-                        if (vectorStrings[j] != field_symbol || vectorStrings[j + 1] != field_symbol) {
-                            vectorStrings(j--);
-                        } else {
-                            vectorStrings(j);
-                            vectorStrings(j);
-                            break;
-                        }
-                    }
-                }
-            }
-            int i = 0;
-            for (auto r = p.runs(); r.has_next(); r.next()) {
-                r.set_text(vectorStrings.vector_strings[i++].c_str());
-            }
-        }
-        doc.save();
-        return document;
+Document Generator::generate(const Template &source, const std::string &name) {
+    if (name.empty() || name == "." || name == ".." ||
+        name.find_first_of("/\\:*?\"<>|") != std::string::npos ||
+        name.find('\0') != std::string::npos) {
+        throw std::invalid_argument("Недопустимое имя файла документа.");
     }
-
+    return generateTo(source, name, "./documents/" + name + ".docx");
 }
 
-
-void Generator::generate(Template &aTemplate) {
-    int flag = 0;
-    while (true) {
-        if (!FileManager::fileExists(aTemplate.get_path())) {
-            flag = 1;
-            break;
-        }
-        duckx::Document doc(aTemplate.get_path());
-        try {
-            doc.open();
-            for (auto p = doc.paragraphs(); p.has_next(); p.next()) {
-
-                VectorStrings vectorStrings;
-                for (auto r = p.runs(); r.has_next(); r.next()) {
-                    vectorStrings.vector_strings.emplace_back(r.get_text());
-                }
-                vectorStrings.init();
-                for (int i = 0; i < vectorStrings.size - 1; i++) {
-                    if (vectorStrings[i] == field_symbol && vectorStrings[i + 1] == field_symbol) {
-                        std::string tmp;
-                        for (int j = i + 2; j < vectorStrings.size - 1; j++) {
-                            if (vectorStrings[j] != field_symbol || vectorStrings[j + 1] != field_symbol)
-                                tmp += vectorStrings[j];
-                            else {
-                                i = j + 2;
-                                break;
-                            }
-                        }
-                        aTemplate.fields_.emplace_back(tmp);
-                    }
-                }
-            }
-        } catch (...) {
-            flag = 2;
-            break;
-        }
-        return;
-    }
-    switch (flag) {
-        case 1:
-            throw std::invalid_argument("Invalid template: no such file in directory🙂");
-        case 2:
-            throw std::invalid_argument("Invalid template: error while processing file🙂");
-        default:
-            throw std::invalid_argument("Unhandled exception");
-    }
-
+Document Generator::generateTo(const Template &source, const std::string &name,
+                               const std::string &destination) {
+    DocxPackage::render(source.get_path(), destination, fieldSymbol_, source.fields_);
+    return Document(name, destination);
 }
 
-void Generator::generate(Document &aDocument) {
-
+void Generator::generate(Template &source) {
+    const auto names = DocxPackage::fieldNames(source.get_path(), fieldSymbol_);
+    std::vector<Field> fields;
+    fields.reserve(names.size());
+    for (const auto &name : names) {
+        fields.emplace_back(name);
+    }
+    source.fields_ = std::move(fields);
 }
 
-Generator::~Generator() = default;
+void Generator::generate(Document &document) {
+    DocxPackage::validate(document.get_path());
+}

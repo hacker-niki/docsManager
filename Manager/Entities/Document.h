@@ -1,45 +1,33 @@
-//
-// Created by nikita on 22.03.24.
-//
-
 #ifndef DOCUMENT_H
 #define DOCUMENT_H
 
-#include <vector>
-#include <iostream>
-
 #include "../Interfaces/IDocument.h"
 #include "Field.h"
-#include "../Interfaces/ISerializer.h"
+#include <utility>
+#include <vector>
 
 class Document : public IDocument, public ISerializer<Document> {
-protected:
-    std::string name_;
-    std::string type_;
-    std::string filepath_;
-    std::vector<Field> fields_;
-    int id;
-
 public:
-    Document() : type_("Document") {}
-
+    Document() = default;
     Document(const std::string &name, const std::string &filepath);
 
-    std::string get_name() const override;
-
-    std::string get_type() const override;
-
-    std::string get_path() const override;
+    std::string get_name() const override { return name_; }
+    void set_name(std::string name) { name_ = std::move(name); }
+    std::string get_type() const override { return type_; }
+    std::string get_path() const override { return filepath_; }
+    void set_path(std::string path) { filepath_ = std::move(path); }
+    int get_id() const { return id_; }
+    void set_id(int id) { id_ = id; }
 
     std::string to_string() const override;
-
-    int get_id() const { return this->id; };
-
-    void set_id(int i) { 
-//        std::cout<<i;
-        this->id = i; }
-
     Document from_string(const std::string &str) override;
+
+private:
+    std::string name_;
+    std::string type_ = "Document";
+    std::string filepath_;
+    std::vector<Field> fields_;
+    int id_ = 0;
 };
 
-#endif //DOCUMENT_H
+#endif

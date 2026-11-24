@@ -1,41 +1,57 @@
-# docs Manager
-**NIKITA SENKO 253505**
+# Docs Manager
 
-## Project Description
+Настольная библиотека документов для одного пользователя Linux. Приложение хранит копии файлов локально, ведёт каталог в SQLite и создаёт документы Word по шаблонам DOCX. Автор проекта — Никита Сенько.
 
-This project is a document management system for a company. 
-It allows users to create, edit, view, and delete documents. 
-The system also includes a document generator that can be used to generate documents from templates.
+## Установка на Ubuntu 24.04 (amd64)
 
-## Dependencies:
-- elzip
+Скачайте пакет `docsmanager_1.0.0_amd64.deb` из артефактов успешной сборки GitHub Actions или соберите его по инструкции ниже. В каталоге с пакетом выполните:
 
+```sh
+sudo apt install ./docsmanager_1.0.0_amd64.deb
+docsManager
+```
 
-### System Class Diagram
+В меню приложений программа называется **Docs Manager**.
 
-![Untitled Diagram drawio(1)](https://github.com/hacker-niki/docsManager/assets/62511860/4a4321a8-073b-42a3-adc9-afd0e3cde964)
+## Создание документа
 
+1. В Word или LibreOffice Writer подготовьте DOCX. Например, напишите «Получатель: %%Имя%%» в абзаце или ячейке таблицы.
+2. На вкладке **Шаблоны** нажмите **Добавить шаблон…**, выберите файл и укажите название.
+3. Выберите шаблон, нажмите **Создать документ…**, заполните поля и задайте название результата. На вкладке **Документы** появится готовый файл.
+4. Откройте карточку документа. **Открыть в приложении** передаёт DOCX, PDF или TXT установленной программе. Изменения, сохранённые редактором, останутся в библиотеке. **Сохранить копию…** экспортирует файл в выбранную папку. Остальные типы файлов можно импортировать и экспортировать.
 
-### Application Functions
+Маркеры чувствительны к регистру. Каждое вхождение даёт отдельное поле. Маркер может пересекать границы форматирования внутри абзаца. Имя поля занимает от 1 до 256 байт UTF-8, максимум 512 полей на шаблон. Подстановка охватывает основной текст и таблицы. Колонтитулы и вложения копируются как есть. Размер DOCX ограничен 128 МиБ, размер каждой разбираемой XML-части — 16 МиБ.
 
-    Create Document: This function allows users to create new documents. Users can specify the document type_, name_, and content_.
-    Edit Document: This function allows users to edit existing documents. Users can change the document type_, name_, and content_.
-    View Document: This function allows users to view existing documents. Users can see the document type_, name_, and content_.
-    Delete Document: This function allows users to delete existing documents.
-    Generate Document: This function allows users to generate documents from templates. Users can specify the template name_ and the data to be used to generate the document.
+Названия уникальны в пределах своей вкладки. Переименование меняет название в каталоге. Удаление требует подтверждения и убирает управляемую копию после удаления последней ссылки на неё. Исходный файл, из которого сделан импорт, сохраняется.
 
-### Data Models
+## Каталог данных и прежние версии
 
-    Document: The Document class represents a document in the system. 
-    It has the following properties:
-    - ID
-    - Type
-    - Name
-    - Content
-  
-    Template: The Template class represents a template that can be used to generate documents. 
-      It has the following properties:
-    - ID
-    - Name
-    - Content
-    - fields_
+По умолчанию библиотека находится в `$XDG_DATA_HOME/docsManager` (обычно `~/.local/share/docsManager`). Одновременно с библиотекой работает один экземпляр приложения. Чтобы выбрать другую библиотеку, передайте её каталог:
+
+```sh
+docsManager --data-dir "/путь/к/библиотеке"
+```
+
+Старые версии сохраняли `docsmanager.db`, `templates/` и `documents/` в рабочем каталоге запуска. Закройте старую версию и сделайте копию всего каталога, включая `data/`, если он есть. Откройте копию через `--data-dir`. Программа читает прежний формат записей и сохраняет их идентификаторы. Используйте этот же параметр при последующих запусках.
+
+Для резервной копии закройте приложение и редакторы открытых документов, затем скопируйте каталог библиотеки целиком. Для восстановления откройте скопированный каталог через `--data-dir`. База содержит названия, поля и пути, а содержимое документов хранится в соседних папках.
+
+## Сборка и проверка
+
+Требуются C++17, CMake 3.22+, Qt 6 Widgets, SQLite 3.38+ с поддержкой JSON, libzip и libxml2. На Ubuntu 24.04:
+
+```sh
+sudo apt update
+sudo apt install build-essential cmake ninja-build pkg-config qt6-base-dev libsqlite3-dev libzip-dev libxml2-dev
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+cmake --build build
+ctest --test-dir build --output-on-failure
+./build/docsManager
+```
+
+Тесты создают временные библиотеки. Сценарии интерфейса выполняются через Qt offscreen. Для сборки установочного пакета Ubuntu:
+
+```sh
+sudo apt install dpkg-dev file
+(cd build && cpack -G DEB)
+```

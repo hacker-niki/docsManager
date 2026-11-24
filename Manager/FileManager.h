@@ -1,27 +1,14 @@
-//
-// Created by nikita on 05.04.24.
-//
-
-#ifndef DOCSMANAGER_FILEMANAGER_H
-#define DOCSMANAGER_FILEMANAGER_H
-
+#pragma once
 
 #include <string>
-#include <fstream>
 
 class FileManager {
-
 public:
     static bool copyFile(const std::string &sourcePath, const std::string &destinationPath);
-
     static std::string getFileName(const std::string &filePath);
-    
-    static std::string read_docx(std::string filePath);
-    static bool fileExists(const std::string& filename) {
-        std::ifstream file(filename);
-        return file.good();
-    }
-    static void create_directory(std::string dirName);
+    static std::string read_docx(const std::string &path);
+    static void validateDocx(const std::string &path);
+    static void createBlankDocx(const std::string &path);
+    static bool fileExists(const std::string &path);
+    static void create_directory(const std::string &path);
 };
-
-#endif //DOCSMANAGER_FILEMANAGER_H

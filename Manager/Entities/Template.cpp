@@ -1,66 +1,23 @@
-//
-// Created by nikita on 22.03.24.
-//
-
-#include <duckx/duckx.hpp>
 #include "Template.h"
-
+#include "RecordJson.h"
 
 void Template::set_field(int id, std::string content) {
-    while (true) {
-        if (id < 0 || id >= fields_.size())
-            break;
-        fields_[id].set_content(content);
-        return;
-    }
-    throw std::out_of_range("There's no field with such id🙂");
+    fields_.at(static_cast<std::size_t>(id)).set_content(content);
 }
-
 
 Field Template::get_field(int id) const {
-    while (true) {
-        if (id < 0 || id >= fields_.size())
-            break;
-        return fields_[id];
-    }
-    throw std::out_of_range("There's no field with such id🙂");
-}
-
-
-std::vector<Field> Template::get_fields() const {
-    return fields_;
-}
-
-Template Template::from_string(const std::string &str) {
-    nlohmann::json j = nlohmann::json::parse(str);
-
-    name_ = j["name"].get<std::string>();
-    type_ = j["type"].get<std::string>();
-    filepath_ = j["filepath"].get<std::string>();
-
-    fields_.clear();
-
-    for (const auto &field_json: j["fields_"]) {
-        Field field("");
-        // Assuming Field class has a from_string method
-        field.from_string(field_json.get<std::string>());
-        fields_.push_back(field);
-    }
-
-    return *this;
+    return fields_.at(static_cast<std::size_t>(id));
 }
 
 std::string Template::to_string() const {
-    nlohmann::json j;
-    j["name"] = name_;
-    j["type"] = type_;
-    j["filepath"] = filepath_;
-    j["fields_"] = nlohmann::json::array();
+    return RecordJson::encode(name_, type_, filepath_, fields_);
+}
 
-    for (auto &field: fields_) {
-        // Assuming Field class has a to_string method
-        j["fields_"].push_back(field.to_string());
-    }
-
-    return j.dump();
+Template Template::from_string(const std::string &str) {
+    auto data = RecordJson::decode(str);
+    name_ = std::move(data.name);
+    type_ = std::move(data.type);
+    filepath_ = std::move(data.path);
+    fields_ = std::move(data.fields);
+    return *this;
 }

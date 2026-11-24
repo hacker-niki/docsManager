@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Docs Manager
+Comment=Manage local documents and generate DOCX files from templates
+Comment[ru]=Хранение документов и создание DOCX по шаблонам
+Exec=docsManager
+Icon=x-office-document
+Terminal=false
+Categories=Office;WordProcessor;

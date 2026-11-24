@@ -1,0 +1,7 @@
+/build*/
+/_CPack_Packages/
+*.user
+/docsmanager.db*
+/documents/
+/templates/
+/data/
