@@ -1,44 +1,30 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
+#include <memory>
 #include <QMainWindow>
-#include <QListWidgetItem>
-#include "../Manager/Manager.h"
 
-QT_BEGIN_NAMESPACE
+class QListWidget;
+class QListWidgetItem;
+class Manager;
 namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow {
-Q_OBJECT
+    Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-
-    ~MainWindow();
-
-public
-    slots:
-
-    void updateTemplateList();
-
-    void updateDocumentList();
-    
-
-private
-    slots:
-
-    void onOpenButtonClicked();
-
-    void onNewButtonClicked();
-
-    void on_openNewWindowButton_clicked(QListWidgetItem *item);
-
-    void on_openDocumentWindowButton_clicked(QListWidgetItem *item);
+    explicit MainWindow(Manager &manager, QWidget *parent = nullptr);
+    ~MainWindow() override;
 
 private:
-    Ui::MainWindow *ui;
-    Manager manager_;
-};
+    void importFile(bool isTemplate);
+    void refreshList(bool isTemplate);
+    void updateActions();
+    void openSelected(QListWidgetItem *item);
+    void renameSelected();
+    void deleteSelected();
+    bool showingTemplates() const;
+    QListWidget *activeList() const;
 
-#endif // MAINWINDOW_H
+    Manager &manager_;
+    std::unique_ptr<Ui::MainWindow> ui;
+};

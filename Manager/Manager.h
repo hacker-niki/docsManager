@@ -1,51 +1,43 @@
-//
-// Created by nikita on 22.03.24.
-//
+#pragma once
 
-#ifndef MANAGER_H
-#define MANAGER_H
-
-#include <memory>
-#include "Interfaces/IGenerator.h"
-#include "Interfaces/IRepository.h"
-#include "Repository/TemplateRepository.h"
 #include "Repository/RepMaster.h"
 
+#include <filesystem>
+#include <functional>
+#include <memory>
+
+class QLockFile;
+
 class Manager {
-    std::shared_ptr<RepMaster> repMaster_;
-    std::shared_ptr<IGenerator> generator_;
-    std::string folder_name_;
-    
 public:
     Manager();
-
+    explicit Manager(std::filesystem::path dataDirectory);
     ~Manager();
 
     std::vector<Document> get_documents();
-
     std::vector<Template> get_templates();
-
-    void create_template(std::string path, std::string name);
-
-    void create_template_form_blank(std::string name);
-
-    void add_document(int templateId, std::string name);
-
-    void add_document(std::string document, std::string name);
-
+    Document getDocument(int id);
     Template getTemplate(int id);
 
-    Document getDocument(int id);
+    void create_template(std::string path, std::string name);
+    void create_template_form_blank(std::string name);
+    void create_document_from_template(Template temp, std::string name);
+    void add_document(int templateId, std::string name);
+    void add_document(std::string path, std::string name);
 
     void deleteDocument(int id);
-
     void deleteTemplate(int id);
-
     void updateDocument(int id, Document document);
-
     void updateTemplate(int id, Template temp);
+    void renameDocument(int id, std::string name);
+    void renameTemplate(int id, std::string name);
 
-    void create_document_from_template(Template temp, std::string name);
+private:
+    enum class FileChange { Add, Remove };
+    void changeFile(const std::filesystem::path &file, FileChange kind, const std::function<void()> &change);
+    void finishFileChange(const std::string &relative, bool justAdded = false);
+
+    std::filesystem::path directory_;
+    std::unique_ptr<QLockFile> lock_;
+    std::unique_ptr<RepMaster> repositories_;
 };
-
-#endif //MANAGER_H

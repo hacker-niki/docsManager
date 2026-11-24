@@ -1,37 +1,24 @@
-//
-// Created by nikita on 01.06.24.
-//
+#pragma once
 
-#ifndef DOCSMANAGER_INFOWINDOW_H
-#define DOCSMANAGER_INFOWINDOW_H
-
-#include <QMainWindow>
-#include <QListWidgetItem>
-#include <QMessageBox>
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QLabel>
+#include <vector>
+#include <QDialog>
 #include "../Manager/Entities/Template.h"
-#include "../Manager/Manager.h"
 
+class QLineEdit;
+class Manager;
 
 class InfoWindow : public QDialog {
-Q_OBJECT
+    Q_OBJECT
 
 public:
-    explicit InfoWindow(QMainWindow *parent, Template temp, Manager &manager);
-
-private slots:
-
-    void onSaveButtonClicked();
-
-    void onOpenButtonClicked();
+    InfoWindow(QWidget *parent, Template source, Manager &manager);
+    QString documentName() const;
 
 private:
-    Template template_;
-    std::vector<QLineEdit *> fieldEdits_;
-    Manager &manager_;
-    QMainWindow *parent_;
-};
+    void createDocument();
 
-#endif //DOCSMANAGER_INFOWINDOW_H
+    Template source_;
+    Manager &manager_;
+    QLineEdit *nameEdit_;
+    std::vector<QLineEdit *> fieldEdits_;
+};

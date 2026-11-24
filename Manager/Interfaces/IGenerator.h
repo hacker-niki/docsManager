@@ -1,22 +1,12 @@
-//
-// Created by nikita on 22.03.24.
-//
-
-#ifndef IGENERATOR_H
-#define IGENERATOR_H
+#pragma once
 
 #include "../Entities/Document.h"
 #include "../Entities/Template.h"
 
 class IGenerator {
 public:
-//    ~IGenerator() = delete;
-
-    virtual Document generate(const Template &aTemplate, const std::string &name) = 0;
-
-    virtual void generate(Template &aTemplate) = 0;
-
-    virtual void generate(Document &aDocument) = 0;
+    virtual ~IGenerator() = default;
+    virtual Document generate(const Template &source, const std::string &name) = 0;
+    virtual void generate(Template &source) = 0;
+    virtual void generate(Document &document) = 0;
 };
-
-#endif //IGENERATOR_H

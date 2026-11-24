@@ -1,102 +1,71 @@
-// Created by nikita on 01.06.24.
-//
+#include "InfoWindow.h"
+#include "UiError.h"
+#include "../Manager/Manager.h"
 
-#include <QDialog>
-#include <QVBoxLayout>
+#include <utility>
+#include <QDialogButtonBox>
+#include <QFormLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QMessageBox>
-#include <QInputDialog>
-#include <QFileDialog>
-#include <QProcess>
-#include "InfoWindow.h"
-#include "ui_InfoWindow.h"
-#include "MainWindow.h"
+#include <QScrollArea>
+#include <QVBoxLayout>
 
-InfoWindow::InfoWindow(QMainWindow *parent, Template temp, Manager &manager)
-        : QDialog(parent), template_(temp), manager_(manager), parent_(parent) {
-
-    setMinimumSize(400, 300);
-
+InfoWindow::InfoWindow(QWidget *parent, Template source, Manager &manager)
+    : QDialog(parent), source_(std::move(source)), manager_(manager) {
+    setWindowTitle(tr("Создать документ — %1").arg(QString::fromStdString(source_.get_name())));
+    resize(480, 360);
     auto *layout = new QVBoxLayout(this);
+    auto *nameLayout = new QFormLayout;
+    nameEdit_ = new QLineEdit(this);
+    nameEdit_->setObjectName("documentName");
+    nameLayout->addRow(tr("Название документа"), nameEdit_);
+    layout->addLayout(nameLayout);
 
-    auto *titleLabel = new QLabel(QString(temp.get_name().c_str()), this);
-    titleLabel->setAlignment(Qt::AlignCenter);
-    layout->addWidget(titleLabel);
-
-    for (const auto &field: temp.get_fields()) {
-        auto *fieldLayout = new QHBoxLayout();
-
-        auto *nameLabel = new QLabel(QString(field.get_name().c_str()), this);
-        fieldLayout->addWidget(nameLabel);
-
-        auto *contentEdit = new QLineEdit(QString(field.get_content().c_str()), this);
-        fieldLayout->addWidget(contentEdit);
-
-        fieldEdits_.push_back(contentEdit);
-
-        layout->addLayout(fieldLayout);
+    auto *scroll = new QScrollArea(this);
+    scroll->setWidgetResizable(true);
+    auto *contents = new QWidget;
+    auto *fields = new QFormLayout(contents);
+    fields->setRowWrapPolicy(QFormLayout::WrapLongRows);
+    for (const auto &field : source_.get_fields()) {
+        auto *label = new QLabel(QString::fromStdString(field.get_name()), contents);
+        label->setTextFormat(Qt::PlainText);
+        label->setWordWrap(true);
+        auto *value = new QLineEdit(QString::fromStdString(field.get_content()), contents);
+        value->setObjectName(QStringLiteral("fieldValue%1").arg(fieldEdits_.size()));
+        label->setBuddy(value);
+        fields->addRow(label, value);
+        fieldEdits_.push_back(value);
     }
+    scroll->setWidget(contents);
+    layout->addWidget(scroll);
+    scroll->setVisible(!fieldEdits_.empty());
 
-    auto *saveButton = new QPushButton("Save", this);
-    layout->addWidget(saveButton);
-
-    connect(saveButton, &QPushButton::clicked, this, &InfoWindow::onSaveButtonClicked);
-
-    setLayout(layout);
+    auto *buttons = new QDialogButtonBox(QDialogButtonBox::Cancel, this);
+    auto *create = buttons->addButton(tr("Создать"), QDialogButtonBox::AcceptRole);
+    create->setObjectName("createButton");
+    create->setDefault(true);
+    create->setEnabled(false);
+    connect(nameEdit_, &QLineEdit::textChanged, this, [create](const QString &text) {
+        create->setEnabled(!text.trimmed().isEmpty());
+    });
+    connect(buttons, &QDialogButtonBox::accepted, this, &InfoWindow::createDocument);
+    connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
+    layout->addWidget(buttons);
+    nameEdit_->setFocus();
 }
 
-void InfoWindow::onSaveButtonClicked() {
-    for (size_t i = 0; i < fieldEdits_.size(); ++i) {
-        template_.set_field(i, fieldEdits_[i]->text().toStdString());
-    }
-    bool ok;
-    QString name = QInputDialog::getText(this, tr(""), tr("Название документа:"), QLineEdit::Normal, "", &ok);
-    if (ok && !name.isEmpty()) {
-        manager_.create_document_from_template(template_, name.toStdString());
-        MainWindow *mainWindow = qobject_cast<MainWindow *>(parentWidget());
-        if (mainWindow) {
-            mainWindow->updateTemplateList();
-            mainWindow->updateDocumentList();
-        }
-        QMessageBox::information(this, "Save", "Документ успешно создан!");
-    }
+QString InfoWindow::documentName() const {
+    return nameEdit_->text().trimmed();
 }
 
-void InfoWindow::onOpenButtonClicked() {
-    QString sourceFilePath = QString::fromStdString(template_.get_path());
-    if (sourceFilePath.isEmpty()) {
-        QMessageBox::warning(this, tr("Open Document"), tr("Document path is empty."));
-        return;
-    }
-
-    // Prompt the user to select the destination directory
-    QString destinationDir = QFileDialog::getExistingDirectory(this, tr("Select Destination Directory"));
-    if (destinationDir.isEmpty()) {
-        QMessageBox::warning(this, tr("Operation Cancelled"), tr("No destination directory selected."));
-        return;
-    }
-
-    // Construct the destination file path
-    QFileInfo fileInfo(sourceFilePath);
-    QString destinationFilePath = destinationDir + QDir::separator() + fileInfo.fileName();
-
-    // Copy the file to the destination directory
-    if (QFile::copy(sourceFilePath, destinationFilePath)) {
-        QMessageBox::information(this, tr("Success"), tr("File copied successfully."));
-
-        // Open the file explorer at the destination directory
-#ifdef Q_OS_WIN
-        QProcess::startDetached("explorer", QStringList() << destinationFilePath);
-#elif defined(Q_OS_MAC)
-        QProcess::startDetached("open", QStringList() << destinationFilePath);
-#elif defined(Q_OS_LINUX)
-        QProcess::startDetached("xdg-open", QStringList() << destinationFilePath);
-#else
-        QMessageBox::warning(this, tr("Error"), tr("Opening Explorer is not supported on this platform."));
-#endif
-    } else {
-        QMessageBox::warning(this, tr("Error"), tr("Failed to copy the file."));
-    }
+void InfoWindow::createDocument() {
+    const auto name = documentName();
+    if (name.isEmpty()) return;
+    runWithErrorDialog(this, tr("Создание документа"), [&] {
+        for (size_t i = 0; i < fieldEdits_.size(); ++i)
+            source_.set_field(static_cast<int>(i), fieldEdits_[i]->text().toStdString());
+        manager_.create_document_from_template(source_, name.toStdString());
+        accept();
+    });
 }
